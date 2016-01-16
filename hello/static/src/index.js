@@ -159,7 +159,7 @@ $(function() {
                     console.log(err);
                     return;
                 }
-                App.attachListeners();
+                // App.attachListeners();
                 Quagga.start();
             });
         },
