@@ -164,7 +164,8 @@ class Main extends React.Component {
         React.createElement(
           'h5',
           null,
-          'The book you scanned is:'
+          'The book you scanned is: ',
+          this.state.code
         ),
         React.createElement('img', { src: '' }),
         React.createElement(

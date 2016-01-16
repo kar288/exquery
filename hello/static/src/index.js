@@ -144,7 +144,7 @@ class Main extends React.Component {
       content = (
         <div className="center">
           <h5>
-            The book you scanned is:
+            The book you scanned is: {this.state.code}
           </h5>
           <img src=""/>
           <a
