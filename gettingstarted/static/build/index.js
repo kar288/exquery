@@ -1,6 +1,7 @@
 'use strict';
 
 var f = function () {
+  var that = this;
   var App = {
     init: function () {
       Quagga.init(this.state, function (err) {
@@ -96,7 +97,7 @@ class Main extends React.Component {
   componentDidUpdate() {
     $('select').material_select();
     if (this.state.barcode) {
-      f();
+      f().bind(this);
     }
   }
 
