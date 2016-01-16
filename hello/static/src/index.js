@@ -83,7 +83,7 @@ class Main extends React.Component {
         var code = result.codeResult.code;
         if (App.lastResult !== code) {
           App.lastResult = code;
-          that.nextStep({code: code});
+          that.nextStep({code: code, barcode: false});
           console.log(code);
         //     var $node = null, canvas = Quagga.canvas.dom.image;
         //
