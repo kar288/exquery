@@ -163,18 +163,6 @@ $(function() {
                 Quagga.start();
             });
         },
-        _accessByPath: function(obj, path, val) {
-            var parts = path.split('.'),
-                depth = parts.length,
-                setter = (typeof val !== "undefined") ? true : false;
-
-            return parts.reduce(function(o, key, i) {
-                if (setter && (i + 1) === depth) {
-                    o[key] = val;
-                }
-                return key in o ? o[key] : {};
-            }, obj);
-        },
         state: {
             inputStream: {
                 type : "LiveStream",
