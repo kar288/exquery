@@ -11,10 +11,10 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"> -->
 
   <!-- Compiled and minified JavaScript -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script> -->
 
   <script src="/static/quagga.js"></script>
   <style type="text/css">
@@ -63,5 +63,19 @@
   {% for f in static_files %}
     <script src="/static/build/{{f}}"></script>
   {% endfor %}
+
+
+<section id="container" class="container">
+    <h3>The user's camera</h3>
+    <p>If your platform supports the <strong>getUserMedia</strong> API call, you
+        can try the real-time locating and decoding features.
+        Simply allow the page to access your web-cam and point it to a barcode.</p>
+    <p>The various options available allow you to adjust the decoding
+        process to your needs (Type of barcode, resolution, ...)</p>
+    <div id="result_strip">
+        <ul class="thumbnails"></ul>
+    </div>
+    <div id="interactive" class="viewport"></div>
+</section>
 </body>
 </html>

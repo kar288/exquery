@@ -11,7 +11,7 @@ class Header extends React.Component {
   render() {
     return React.createElement(
       'nav',
-      { className: 'red lighten-1', role: 'navigation' },
+      { className: 'red', role: 'navigation' },
       React.createElement(
         'div',
         { className: 'nav-wrapper container' },

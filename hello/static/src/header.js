@@ -10,7 +10,7 @@ class Header extends React.Component {
   }
   render() {
     return (
-      <nav className="red lighten-1" role="navigation">
+      <nav className="red" role="navigation">
         <div className="nav-wrapper container">
           <a id="logo-container" href="#" className="brand-logo">
             ExQuery
