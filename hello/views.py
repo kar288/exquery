@@ -1,12 +1,21 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-
+import os
 from .models import Greeting
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 # Create your views here.
 def index(request):
     # return HttpResponse('Hello from Python!')
-    return render(request, 'index.html')
+    path = settings.STATICFILES_DIRS[0] + '/build'  # insert the path to your directory
+    file_list = os.listdir(path)
+    # file_list = '';
+    print(file_list)
+    # for (f in file_list):
+        # f = path + 
+    return render(request, 'index.html', {'static_files': file_list})
 
 
 def db(request):
@@ -17,4 +26,3 @@ def db(request):
     greetings = Greeting.objects.all()
 
     return render(request, 'db.html', {'greetings': greetings})
-
