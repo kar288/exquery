@@ -1,205 +1,6 @@
 'use strict';
 
 var f = function () {
-  console.log('jkdfajlk');
-  Quagga.init({
-    inputStream: {
-      name: "Live",
-      type: "LiveStream"
-    },
-    decoder: {
-      readers: ["code_128_reader"]
-    }
-  }, function (err) {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    console.log("Initialization finished. Ready to start");
-    Quagga.start();
-  });
-};
-
-const steps = {
-  'inputType': 0,
-  'input': 1,
-  'confirmation': 2,
-  'recommendations': 3,
-  'results': 4
-};
-
-class Main extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { step: steps.inputType };
-  }
-
-  nextStep() {
-    this.setState({ step: this.state.step + 1 });
-  }
-
-  componentDidUpdate() {
-    $('select').material_select();
-  }
-
-  render() {
-    var content = React.createElement(
-      'div',
-      { className: 'center' },
-      React.createElement(
-        'h5',
-        null,
-        'Get recommendations based on a book of your liking:'
-      ),
-      React.createElement(BookInputOption, {
-        onClick: f,
-        icon: 'camera',
-        text: 'Scan the books bar code'
-      }),
-      React.createElement(BookInputOption, {
-        onClick: this.nextStep.bind(this),
-        icon: 'fingerprint',
-        text: 'Enter books ISBN code'
-      })
-    );
-    if (this.state.step === steps.input) {
-      content = React.createElement(
-        'div',
-        { className: 'center' },
-        React.createElement(
-          'div',
-          { className: 'row' },
-          React.createElement(
-            'form',
-            { className: 'col s12', onSubmit: this.nextStep.bind(this) },
-            React.createElement(
-              'div',
-              { className: 'row' },
-              React.createElement(
-                'div',
-                { className: 'input-field col s12' },
-                React.createElement('input', { placeholder: 'ISBN Code', id: 'isbn', type: 'text', className: 'validate' }),
-                React.createElement(
-                  'label',
-                  { htmlFor: 'isbn' },
-                  'ISBN Code'
-                )
-              )
-            ),
-            React.createElement(
-              'button',
-              { className: 'btn waves-effect waves-light', type: 'submit', name: 'action' },
-              'Submit'
-            )
-          )
-        )
-      );
-    } else if (this.state.step === steps.confirmation) {
-      content = React.createElement(
-        'div',
-        { className: 'center' },
-        React.createElement(
-          'h5',
-          null,
-          'The book you scanned is:'
-        ),
-        React.createElement('img', { src: '' }),
-        React.createElement(
-          'a',
-          {
-            onClick: this.nextStep.bind(this),
-            className: 'waves-effect waves-light btn-large'
-          },
-          'Get recommendations'
-        )
-      );
-    } else if (this.state.step === steps.recommendations) {
-      content = React.createElement(
-        'div',
-        { className: 'center' },
-        React.createElement(
-          'h5',
-          null,
-          'Similar books are:'
-        ),
-        React.createElement(
-          'div',
-          null,
-          'Please select the books that you are mostly interested in to get further recommendations'
-        ),
-        React.createElement(
-          'a',
-          {
-            onClick: this.nextStep.bind(this),
-            className: 'waves-effect waves-light btn-large'
-          },
-          'Expand recommendations'
-        )
-      );
-    } else if (this.state.step === steps.results) {
-      content = React.createElement(
-        'div',
-        { className: 'center' },
-        React.createElement(
-          'div',
-          { className: 'row' },
-          React.createElement(
-            'div',
-            { className: 'col-xs-9' },
-            'Results:'
-          ),
-          React.createElement(
-            'div',
-            { className: 'col-xs-3' },
-            React.createElement(
-              'div',
-              { className: 'input-field col s12' },
-              React.createElement(
-                'select',
-                null,
-                React.createElement(
-                  'option',
-                  { value: '', disabled: true, selected: true },
-                  'Sort By:'
-                ),
-                React.createElement(
-                  'option',
-                  { value: 'title' },
-                  'Title'
-                ),
-                React.createElement(
-                  'option',
-                  { value: 'author' },
-                  'Author'
-                )
-              ),
-              React.createElement(
-                'label',
-                null,
-                'Sort'
-              )
-            )
-          )
-        )
-      );
-    }
-    return React.createElement(
-      'div',
-      null,
-      React.createElement(Header, null),
-      content
-    );
-  }
-}
-
-ReactDOM.render(React.createElement(Main, null), document.getElementById('example'));
-
-var a = [1, 2, 3, 4, 5];
-// a.forEach(b => console.log(b));
-
-console.log('bbbb');
-
-$(function () {
   var App = {
     init: function () {
       Quagga.init(this.state, function (err) {
@@ -271,4 +72,183 @@ $(function () {
     //     $("#result_strip ul.thumbnails").prepend($node);
     // }
   });
-});
+};
+
+const steps = {
+  'inputType': 0,
+  'input': 1,
+  'confirmation': 2,
+  'recommendations': 3,
+  'results': 4
+};
+
+class Main extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { step: steps.inputType };
+  }
+
+  nextStep() {
+    this.setState({ step: this.state.step + 1 });
+  }
+
+  componentDidUpdate() {
+    $('select').material_select();
+  }
+
+  render() {
+    var content = React.createElement(
+      "div",
+      { className: "center" },
+      React.createElement(
+        "h5",
+        null,
+        "Get recommendations based on a book of your liking:"
+      ),
+      React.createElement(BookInputOption, {
+        onClick: f,
+        icon: 'camera',
+        text: "Scan the books bar code"
+      }),
+      React.createElement(BookInputOption, {
+        onClick: this.nextStep.bind(this),
+        icon: 'fingerprint',
+        text: "Enter books ISBN code"
+      })
+    );
+    if (this.state.step === steps.input) {
+      content = React.createElement(
+        "div",
+        { className: "center" },
+        React.createElement(
+          "div",
+          { className: "row" },
+          React.createElement(
+            "form",
+            { className: "col s12", onSubmit: this.nextStep.bind(this) },
+            React.createElement(
+              "div",
+              { className: "row" },
+              React.createElement(
+                "div",
+                { className: "input-field col s12" },
+                React.createElement("input", { placeholder: "ISBN Code", id: "isbn", type: "text", className: "validate" }),
+                React.createElement(
+                  "label",
+                  { htmlFor: "isbn" },
+                  "ISBN Code"
+                )
+              )
+            ),
+            React.createElement(
+              "button",
+              { className: "btn waves-effect waves-light", type: "submit", name: "action" },
+              "Submit"
+            )
+          )
+        )
+      );
+    } else if (this.state.step === steps.confirmation) {
+      content = React.createElement(
+        "div",
+        { className: "center" },
+        React.createElement(
+          "h5",
+          null,
+          "The book you scanned is:"
+        ),
+        React.createElement("img", { src: "" }),
+        React.createElement(
+          "a",
+          {
+            onClick: this.nextStep.bind(this),
+            className: "waves-effect waves-light btn-large"
+          },
+          "Get recommendations"
+        )
+      );
+    } else if (this.state.step === steps.recommendations) {
+      content = React.createElement(
+        "div",
+        { className: "center" },
+        React.createElement(
+          "h5",
+          null,
+          "Similar books are:"
+        ),
+        React.createElement(
+          "div",
+          null,
+          "Please select the books that you are mostly interested in to get further recommendations"
+        ),
+        React.createElement(
+          "a",
+          {
+            onClick: this.nextStep.bind(this),
+            className: "waves-effect waves-light btn-large"
+          },
+          "Expand recommendations"
+        )
+      );
+    } else if (this.state.step === steps.results) {
+      content = React.createElement(
+        "div",
+        { className: "center" },
+        React.createElement(
+          "div",
+          { className: "row" },
+          React.createElement(
+            "div",
+            { className: "col-xs-9" },
+            "Results:"
+          ),
+          React.createElement(
+            "div",
+            { className: "col-xs-3" },
+            React.createElement(
+              "div",
+              { className: "input-field col s12" },
+              React.createElement(
+                "select",
+                null,
+                React.createElement(
+                  "option",
+                  { value: "", disabled: true, selected: true },
+                  "Sort By:"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "title" },
+                  "Title"
+                ),
+                React.createElement(
+                  "option",
+                  { value: "author" },
+                  "Author"
+                )
+              ),
+              React.createElement(
+                "label",
+                null,
+                "Sort"
+              )
+            )
+          )
+        )
+      );
+    }
+    return React.createElement(
+      "div",
+      null,
+      React.createElement(Header, null),
+      content
+    );
+  }
+}
+
+ReactDOM.render(React.createElement(Main, null), document.getElementById('example'));
+
+var a = [1, 2, 3, 4, 5];
+// a.forEach(b => console.log(b));
+
+console.log('bbbb');
