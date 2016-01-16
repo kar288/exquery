@@ -15,7 +15,14 @@ class BookRecommendation extends React.Component {
   render() {
     return (
       <img src={this.props.img} onClick={this.showDetails}>
-
+      <div class="switch">
+        <label>
+          Off
+          <input type="checkbox">
+          <span class="lever"></span>
+          On
+        </label>
+      </div>
     );
   }
 }

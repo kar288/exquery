@@ -10,11 +10,11 @@ from django.conf.urls.static import static
 def index(request):
     # return HttpResponse('Hello from Python!')
     path = settings.STATICFILES_DIRS[0] + '/build'  # insert the path to your directory
-    file_list = os.listdir(path)
+    file_list = sorted(os.listdir(path))
     # file_list = '';
     print(file_list)
     # for (f in file_list):
-        # f = path + 
+        # f = path +
     return render(request, 'index.html', {'static_files': file_list})
 
 
