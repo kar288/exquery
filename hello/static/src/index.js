@@ -61,6 +61,7 @@ var f = function() {
 
   Quagga.onDetected(function(result) {
       var code = result.codeResult.code;
+      that.nextStep({code: code});
       console.log(code);
       // if (App.lastResult !== code) {
       //     App.lastResult = code;
@@ -88,12 +89,17 @@ class Main extends React.Component {
     this.state = {step: steps.inputType};
   }
 
-  nextStep() {
-    this.setState({step: this.state.step + 1});
+  nextStep(state) {
+    this.setState(
+      Object.assign(state, {step: this.state.step + 1})
+    );
   }
 
   componentDidUpdate() {
     $('select').material_select();
+    if (this.state.barcode) {
+      f();
+    }
   }
 
   render() {
@@ -101,7 +107,7 @@ class Main extends React.Component {
       <div className="center">
         <h5>Get recommendations based on a book of your liking:</h5>
         <BookInputOption
-          onClick={f}
+          onClick={this.nextStep.bind(this, {barcode: true})}
           icon={'camera'}
           text='Scan the books bar code'
         />
@@ -113,23 +119,27 @@ class Main extends React.Component {
       </div>
     );
     if (this.state.step === steps.input) {
-      content = (
-        <div className="center">
-          <div className="row">
-            <form className="col s12" onSubmit={this.nextStep.bind(this)}>
-              <div className="row">
-                <div className="input-field col s12">
-                  <input placeholder="ISBN Code" id="isbn" type="text" className="validate"/>
-                  <label htmlFor="isbn">ISBN Code</label>
+      if (this.state.barcode) {
+        content = <div id="interactive" className="viewport"></div>;
+      } else {
+        content = (
+          <div className="center">
+            <div className="row">
+              <form className="col s12" onSubmit={this.nextStep.bind(this)}>
+                <div className="row">
+                  <div className="input-field col s12">
+                    <input placeholder="ISBN Code" id="isbn" type="text" className="validate"/>
+                    <label htmlFor="isbn">ISBN Code</label>
+                  </div>
                 </div>
-              </div>
-              <button className="btn waves-effect waves-light" type="submit" name="action">
-                Submit
-              </button>
-            </form>
+                <button className="btn waves-effect waves-light" type="submit" name="action">
+                  Submit
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     } else if (this.state.step === steps.confirmation) {
       content = (
         <div className="center">

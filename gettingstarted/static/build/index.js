@@ -61,6 +61,7 @@ var f = function () {
 
   Quagga.onDetected(function (result) {
     var code = result.codeResult.code;
+    that.nextStep({ code: code });
     console.log(code);
     // if (App.lastResult !== code) {
     //     App.lastResult = code;
@@ -88,12 +89,15 @@ class Main extends React.Component {
     this.state = { step: steps.inputType };
   }
 
-  nextStep() {
-    this.setState({ step: this.state.step + 1 });
+  nextStep(state) {
+    this.setState(Object.assign(state, { step: this.state.step + 1 }));
   }
 
   componentDidUpdate() {
     $('select').material_select();
+    if (this.state.barcode) {
+      f();
+    }
   }
 
   render() {
@@ -106,7 +110,7 @@ class Main extends React.Component {
         "Get recommendations based on a book of your liking:"
       ),
       React.createElement(BookInputOption, {
-        onClick: f,
+        onClick: this.nextStep.bind(this, { barcode: true }),
         icon: 'camera',
         text: "Scan the books bar code"
       }),
@@ -117,37 +121,41 @@ class Main extends React.Component {
       })
     );
     if (this.state.step === steps.input) {
-      content = React.createElement(
-        "div",
-        { className: "center" },
-        React.createElement(
+      if (this.state.barcode) {
+        content = React.createElement("div", { id: "interactive", className: "viewport" });
+      } else {
+        content = React.createElement(
           "div",
-          { className: "row" },
+          { className: "center" },
           React.createElement(
-            "form",
-            { className: "col s12", onSubmit: this.nextStep.bind(this) },
+            "div",
+            { className: "row" },
             React.createElement(
-              "div",
-              { className: "row" },
+              "form",
+              { className: "col s12", onSubmit: this.nextStep.bind(this) },
               React.createElement(
                 "div",
-                { className: "input-field col s12" },
-                React.createElement("input", { placeholder: "ISBN Code", id: "isbn", type: "text", className: "validate" }),
+                { className: "row" },
                 React.createElement(
-                  "label",
-                  { htmlFor: "isbn" },
-                  "ISBN Code"
+                  "div",
+                  { className: "input-field col s12" },
+                  React.createElement("input", { placeholder: "ISBN Code", id: "isbn", type: "text", className: "validate" }),
+                  React.createElement(
+                    "label",
+                    { htmlFor: "isbn" },
+                    "ISBN Code"
+                  )
                 )
+              ),
+              React.createElement(
+                "button",
+                { className: "btn waves-effect waves-light", type: "submit", name: "action" },
+                "Submit"
               )
-            ),
-            React.createElement(
-              "button",
-              { className: "btn waves-effect waves-light", type: "submit", name: "action" },
-              "Submit"
             )
           )
-        )
-      );
+        );
+      }
     } else if (this.state.step === steps.confirmation) {
       content = React.createElement(
         "div",
