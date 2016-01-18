@@ -5,8 +5,8 @@ class Header extends React.Component {
     super(props);
     // this.state = {count: props.initialCount};
   }
-  collapse() {
-    $('.button-collapse').sideNav();
+  componentDidMount() {
+    $(".button-collapse").sideNav();
   }
   render() {
     return (
@@ -15,16 +15,38 @@ class Header extends React.Component {
           <a id="logo-container" href="#" className="brand-logo">
             ExQuery
           </a>
-          <a href="#"
-            data-activates="nav-mobile"
-            className="button-collapse"
-            onClick={this.collapse}>
-            <i className="material-icons">menu</i>
-          </a>
-
-          <ul className="right">
-            <li><a href="#"><i className="material-icons">search</i></a></li>
+          <ul id="slide-out" className="side-nav">
+            <li><a href="#!">First Sidebar Link</a></li>
+            <li><a href="#!">Second Sidebar Link</a></li>
+            <li className="no-padding">
+              <ul className="collapsible collapsible-accordion">
+                <li>
+                  <a className="collapsible-header">Dropdown<i className="mdi-navigation-arrow-drop-down"></i></a>
+                  <div className="collapsible-body">
+                    <ul>
+                      <li><a href="#!">First</a></li>
+                      <li><a href="#!">Second</a></li>
+                      <li><a href="#!">Third</a></li>
+                      <li><a href="#!">Fourth</a></li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </li>
           </ul>
+          <ul className="right hide-on-med-and-down">
+            <li><a href="#!">First Sidebar Link</a></li>
+            <li><a href="#!">Second Sidebar Link</a></li>
+            <li><a className="dropdown-button" href="#!" data-activates="dropdown1">Dropdown<i className="mdi-navigation-arrow-drop-down right"></i></a></li>
+            <ul id='dropdown1' className='dropdown-content'>
+              <li><a href="#!">First</a></li>
+              <li><a href="#!">Second</a></li>
+              <li><a href="#!">Third</a></li>
+              <li><a href="#!">Fourth</a></li>
+            </ul>
+          </ul>
+          <a href="#" data-activates="slide-out" className="button-collapse"><i className="mdi-navigation-menu"></i></a>
+
         </div>
       </nav>
     );
