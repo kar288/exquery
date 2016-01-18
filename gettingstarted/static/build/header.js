@@ -3,183 +3,98 @@
 class Header extends React.Component {
   constructor(props) {
     super(props);
-    // this.state = {count: props.initialCount};
+    this.state = { openFilter: null };
   }
+
   componentDidMount() {
     $(".button-collapse").sideNav();
   }
+
+  toggleSelectedFilter(filter) {
+    this.setState({ openFilter: filter });
+  }
+
   render() {
+    var filters = ['Publication Date', 'Author', 'Media Type', 'Keywords', 'Category'];
+    var filterDetails = [1990, 1991, 1992, 1993, 1994, 1995, 1996];
+    var filterElements = [];
+    var filterDetails = null;
+    filters.forEach((filter, i) => {
+      if (!this.state.openFilter) {
+        filterElements.push(React.createElement(
+          'li',
+          { key: 'filter-' + i },
+          React.createElement(
+            'a',
+            {
+              className: 'filter-element',
+              href: '#!',
+              onClick: this.toggleSelectedFilter.bind(this, filter) },
+            filter
+          ),
+          React.createElement(
+            'i',
+            { className: 'filter-nav-icon material-icons' },
+            'clear'
+          )
+        ));
+      } else if (this.state.openFilter === filter) {
+        filterDetails = React.createElement(
+          'div',
+          { className: 'row filter-detail' },
+          React.createElement(
+            'div',
+            { className: 'col-xs-2' },
+            React.createElement(
+              'i',
+              {
+                onClick: this.toggleSelectedFilter.bind(this, null),
+                className: 'filter-nav-icon material-icons' },
+              'ic_arrow_back'
+            )
+          ),
+          React.createElement(
+            'div',
+            { className: 'col-xs-10' },
+            filter
+          )
+        );
+      }
+    });
     return React.createElement(
-      "nav",
-      { className: "red", role: "navigation" },
+      'nav',
+      { className: 'red', role: 'navigation' },
       React.createElement(
-        "div",
-        { className: "nav-wrapper container" },
+        'div',
+        { className: 'nav-wrapper container' },
         React.createElement(
-          "a",
-          { id: "logo-container", href: "#", className: "brand-logo" },
-          "ExQuery"
+          'a',
+          { id: 'logo-container', href: '#', className: 'brand-logo' },
+          'ExQuery'
         ),
         React.createElement(
-          "ul",
-          { id: "slide-out", className: "side-nav" },
+          'div',
+          { id: 'slide-out', className: 'side-nav' },
           React.createElement(
-            "li",
+            'ul',
             null,
-            React.createElement(
-              "a",
-              { href: "#!" },
-              "First Sidebar Link"
-            )
+            filterElements
           ),
+          filterDetails,
           React.createElement(
-            "li",
-            null,
+            'a',
+            { className: 'filter-add btn-floating btn-large waves-effect waves-light red' },
             React.createElement(
-              "a",
-              { href: "#!" },
-              "Second Sidebar Link"
-            )
-          ),
-          React.createElement(
-            "li",
-            { className: "no-padding" },
-            React.createElement(
-              "ul",
-              { className: "collapsible collapsible-accordion" },
-              React.createElement(
-                "li",
-                null,
-                React.createElement(
-                  "a",
-                  { className: "collapsible-header" },
-                  "Dropdown",
-                  React.createElement("i", { className: "mdi-navigation-arrow-drop-down" })
-                ),
-                React.createElement(
-                  "div",
-                  { className: "collapsible-body" },
-                  React.createElement(
-                    "ul",
-                    null,
-                    React.createElement(
-                      "li",
-                      null,
-                      React.createElement(
-                        "a",
-                        { href: "#!" },
-                        "First"
-                      )
-                    ),
-                    React.createElement(
-                      "li",
-                      null,
-                      React.createElement(
-                        "a",
-                        { href: "#!" },
-                        "Second"
-                      )
-                    ),
-                    React.createElement(
-                      "li",
-                      null,
-                      React.createElement(
-                        "a",
-                        { href: "#!" },
-                        "Third"
-                      )
-                    ),
-                    React.createElement(
-                      "li",
-                      null,
-                      React.createElement(
-                        "a",
-                        { href: "#!" },
-                        "Fourth"
-                      )
-                    )
-                  )
-                )
-              )
+              'i',
+              { className: 'material-icons' },
+              'add'
             )
           )
         ),
         React.createElement(
-          "ul",
-          { className: "right hide-on-med-and-down" },
-          React.createElement(
-            "li",
-            null,
-            React.createElement(
-              "a",
-              { href: "#!" },
-              "First Sidebar Link"
-            )
-          ),
-          React.createElement(
-            "li",
-            null,
-            React.createElement(
-              "a",
-              { href: "#!" },
-              "Second Sidebar Link"
-            )
-          ),
-          React.createElement(
-            "li",
-            null,
-            React.createElement(
-              "a",
-              { className: "dropdown-button", href: "#!", "data-activates": "dropdown1" },
-              "Dropdown",
-              React.createElement("i", { className: "mdi-navigation-arrow-drop-down right" })
-            )
-          ),
-          React.createElement(
-            "ul",
-            { id: "dropdown1", className: "dropdown-content" },
-            React.createElement(
-              "li",
-              null,
-              React.createElement(
-                "a",
-                { href: "#!" },
-                "First"
-              )
-            ),
-            React.createElement(
-              "li",
-              null,
-              React.createElement(
-                "a",
-                { href: "#!" },
-                "Second"
-              )
-            ),
-            React.createElement(
-              "li",
-              null,
-              React.createElement(
-                "a",
-                { href: "#!" },
-                "Third"
-              )
-            ),
-            React.createElement(
-              "li",
-              null,
-              React.createElement(
-                "a",
-                { href: "#!" },
-                "Fourth"
-              )
-            )
-          )
-        ),
-        React.createElement(
-          "a",
-          { href: "#", "data-activates": "slide-out", className: "button-collapse" },
-          React.createElement("i", { className: "mdi-navigation-menu" })
+          'a',
+          { href: '#', 'data-activates': 'slide-out', className: 'button-collapse' },
+          React.createElement('i', { className: 'mdi-navigation-menu' })
         )
       )
     );

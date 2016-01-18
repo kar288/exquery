@@ -3,48 +3,75 @@
 class Header extends React.Component {
   constructor(props) {
     super(props);
-    // this.state = {count: props.initialCount};
+    this.state = {openFilter: null};
   }
+
   componentDidMount() {
     $(".button-collapse").sideNav();
   }
+
+  toggleSelectedFilter(filter) {
+    this.setState({openFilter: filter});
+  }
+
   render() {
+    var filters = [
+      'Publication Date',
+      'Author',
+      'Media Type',
+      'Keywords',
+      'Category',
+    ];
+    var filterDetails = [
+      1990, 1991, 1992, 1993, 1994, 1995, 1996,
+    ];
+    var filterElements = [];
+    var filterDetails = null;
+    filters.forEach((filter, i) => {
+      if (!this.state.openFilter) {
+        filterElements.push(
+          <li key={'filter-' + i}>
+            <a
+              className="filter-element"
+              href="#!"
+              onClick={this.toggleSelectedFilter.bind(this, filter)}>
+              {filter}
+            </a>
+            <i className="filter-nav-icon material-icons">clear</i>
+          </li>
+        );
+      } else if (this.state.openFilter === filter) {
+        filterDetails = (
+          <div className="row filter-detail">
+            <div className="col-xs-2">
+              <i
+                onClick={this.toggleSelectedFilter.bind(this, null)}
+                className="filter-nav-icon material-icons">
+                ic_arrow_back
+              </i>
+            </div>
+            <div className="col-xs-10">
+              {filter}
+            </div>
+          </div>
+        );
+      }
+    });
     return (
       <nav className="red" role="navigation">
         <div className="nav-wrapper container">
           <a id="logo-container" href="#" className="brand-logo">
             ExQuery
           </a>
-          <ul id="slide-out" className="side-nav">
-            <li><a href="#!">First Sidebar Link</a></li>
-            <li><a href="#!">Second Sidebar Link</a></li>
-            <li className="no-padding">
-              <ul className="collapsible collapsible-accordion">
-                <li>
-                  <a className="collapsible-header">Dropdown<i className="mdi-navigation-arrow-drop-down"></i></a>
-                  <div className="collapsible-body">
-                    <ul>
-                      <li><a href="#!">First</a></li>
-                      <li><a href="#!">Second</a></li>
-                      <li><a href="#!">Third</a></li>
-                      <li><a href="#!">Fourth</a></li>
-                    </ul>
-                  </div>
-                </li>
-              </ul>
-            </li>
-          </ul>
-          <ul className="right hide-on-med-and-down">
-            <li><a href="#!">First Sidebar Link</a></li>
-            <li><a href="#!">Second Sidebar Link</a></li>
-            <li><a className="dropdown-button" href="#!" data-activates="dropdown1">Dropdown<i className="mdi-navigation-arrow-drop-down right"></i></a></li>
-            <ul id='dropdown1' className='dropdown-content'>
-              <li><a href="#!">First</a></li>
-              <li><a href="#!">Second</a></li>
-              <li><a href="#!">Third</a></li>
-              <li><a href="#!">Fourth</a></li>
+          <div id="slide-out" className="side-nav">
+            <ul>
+              {filterElements}
             </ul>
-          </ul>
+            {filterDetails}
+            <a className="filter-add btn-floating btn-large waves-effect waves-light red">
+             <i className="material-icons">add</i>
+            </a>
+          </div>
           <a href="#" data-activates="slide-out" className="button-collapse"><i className="mdi-navigation-menu"></i></a>
 
         </div>
