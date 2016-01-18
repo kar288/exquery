@@ -8,7 +8,7 @@ class BookInputOption extends React.Component {
   render() {
     return React.createElement(
       "div",
-      { className: "row", onClick: this.props.onClick },
+      { className: "row something BookInputOption", onClick: this.props.onClick },
       React.createElement(
         "div",
         { className: "col-xs-2" },

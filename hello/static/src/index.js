@@ -7,13 +7,40 @@ const steps = {
   'results': 4
 };
 
+
+var recommendedSamples = [
+  {
+    title: 'Sellevision',
+    author: 'Augusten Burroughs',
+    description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
+    year: 2000,
+    genre: 'novel',
+    image: 'http://t2.gstatic.com/images?q=tbn:ANd9GcQfUY4XR6yDsV-vNwsS6rN447724qTUnyIEbmtYfBBgGCUxlr7_',
+  }, {
+    title: 'Sellevision2',
+    author: 'Augusten Burroughs',
+    description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
+    year: 2000,
+    genre: 'novel',
+    image: 'http://t1.gstatic.com/images?q=tbn:ANd9GcSsKj2GXtKAEp_eIeVY-PnLNuHOa2KvHR0TbyAfeeFu_vGXXK0T'
+  }, {
+    title: 'Sellevision3',
+    author: 'Augusten Burroughs',
+    description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
+    year: 2000,
+    genre: 'novel',
+    image: 'http://t0.gstatic.com/images?q=tbn:ANd9GcQpzKRuDCLJ0y33XEl2w5ABvBOlYcNqz-w1LuEKoPTv9Gy1zDB3'
+  },
+];
+
 class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {step: steps.inputType};
   }
 
-  nextStep(state) {
+  nextStep(state, e) {
+    state.preventDefault();
     this.setState(
       Object.assign(state, {step: this.state.step + 1})
     );
@@ -60,22 +87,22 @@ class Main extends React.Component {
             drawingCanvas = Quagga.canvas.dom.overlay;
 
         if (result) {
-            if (result.boxes) {
-                drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
-                result.boxes.filter(function (box) {
-                    return box !== result.box;
-                }).forEach(function (box) {
-                    Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
-                });
-            }
+          if (result.boxes) {
+            drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+            result.boxes.filter(function (box) {
+              return box !== result.box;
+            }).forEach(function (box) {
+              Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
+            });
+          }
 
-            if (result.box) {
-                Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
-            }
+          if (result.box) {
+            Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
+          }
 
-            if (result.codeResult && result.codeResult.code) {
-                Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: 'red', lineWidth: 3});
-            }
+          if (result.codeResult && result.codeResult.code) {
+            Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: 'red', lineWidth: 3});
+          }
         }
     });
 
@@ -84,7 +111,6 @@ class Main extends React.Component {
         if (App.lastResult !== code) {
           App.lastResult = code;
           that.nextStep({code: code, barcode: false});
-          console.log(code);
         //     var $node = null, canvas = Quagga.canvas.dom.image;
         //
         //     $node = $('<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>');
@@ -100,6 +126,10 @@ class Main extends React.Component {
     if (this.state.barcode) {
       this.f();
     }
+  }
+
+  toggleModal(book) {
+    this.setState({overlay: book});
   }
 
   render() {
@@ -120,7 +150,18 @@ class Main extends React.Component {
     );
     if (this.state.step === steps.input) {
       if (this.state.barcode) {
-        content = <div id="interactive" className="viewport"></div>;
+        content = (
+          <div>
+            <div id="interactive" className="viewport"></div>
+
+            <a
+              onClick={this.nextStep.bind(this, {barcode: false, code: 2000})}
+              className="waves-effect waves-light btn-large"
+            >
+              Cheat next
+            </a>
+          </div>
+        );
       } else {
         content = (
           <div className="center">
@@ -128,7 +169,12 @@ class Main extends React.Component {
               <form className="col s12" onSubmit={this.nextStep.bind(this)}>
                 <div className="row">
                   <div className="input-field col s12">
-                    <input placeholder="ISBN Code" id="isbn" type="text" className="validate"/>
+                    <input
+                      placeholder="ISBN Code"
+                      id="isbn" type="text"
+                      className="validate"
+                      defaultValue="9780312426811"
+                    />
                     <label htmlFor="isbn">ISBN Code</label>
                   </div>
                 </div>
@@ -146,8 +192,9 @@ class Main extends React.Component {
           <h5>
             The book you scanned is: {this.state.code}
           </h5>
-          <img src=""/>
+          <img src="http://t1.gstatic.com/images?q=tbn:ANd9GcQu0tMeJYJYBjWhsFnpzTY58Ap5HXAD5PKVG0SedDugIKRRgs6g"/>
           <a
+            href='#'
             onClick={this.nextStep.bind(this)}
             className="waves-effect waves-light btn-large"
           >
@@ -156,6 +203,16 @@ class Main extends React.Component {
         </div>
       );
     } else if (this.state.step === steps.recommendations) {
+      var recommendedElements = recommendedSamples.map((recommendation, i) => {
+        return (
+          <div className="col-xs-4" key={'rec-' + i}>
+            <BookRecommendation
+              book={recommendation}
+              onClick={this.toggleModal.bind(this, recommendation)}
+            />
+          </div>
+        );
+      });
       content = (
         <div className="center">
           <h5>
@@ -166,6 +223,9 @@ class Main extends React.Component {
             Please select the books that you are mostly
             interested in to get further recommendations
           </div>
+          <div className="row">
+            {recommendedElements}
+          </div>
           <a
             onClick={this.nextStep.bind(this)}
             className="waves-effect waves-light btn-large"
@@ -175,6 +235,19 @@ class Main extends React.Component {
         </div>
       );
     } else if (this.state.step === steps.results) {
+      var recommendedElements = [];
+      for (var i = 0; i < 10; i++) {
+        recommendedSamples.forEach((recommendation, j) => {
+          recommendedElements.push(
+            <div className="col-xs-4" key={'rec-' + j + '-' + i} >
+              <BookPicture
+                book={recommendation}
+                onClick={this.toggleModal.bind(this, recommendation)}
+              />
+            </div>
+          );
+        });
+      }
       content = (
         <div className="center">
           <div className="row">
@@ -183,14 +256,16 @@ class Main extends React.Component {
             </div>
             <div className="col-xs-3">
               <div className="input-field col s12">
-                <select>
-                  <option value="" disabled selected>Sort By:</option>
+                <select defaultValue="Sort by: ">
                   <option value="title">Title</option>
                   <option value="author">Author</option>
                 </select>
                 <label>Sort</label>
               </div>
             </div>
+          </div>
+          <div className="row">
+            {recommendedElements}
           </div>
         </div>
       )
@@ -199,6 +274,13 @@ class Main extends React.Component {
       <div>
         <Header/>
         {content}
+        {this.state.overlay ?
+          <BookModal
+            onClick={this.toggleModal.bind(this, null)}
+            book={this.state.overlay}
+          /> :
+          null
+        }
       </div>
     );
   }

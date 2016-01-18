@@ -7,7 +7,7 @@ class BookInputOption extends React.Component {
   }
   render() {
     return (
-      <div className="row" onClick={this.props.onClick}>
+      <div className="row something BookInputOption" onClick={this.props.onClick}>
         <div className="col-xs-2">
            <a className="btn-floating btn-large waves-effect waves-light red">
             <i className="material-icons">{this.props.icon}</i>

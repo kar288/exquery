@@ -8,13 +8,37 @@ const steps = {
   'results': 4
 };
 
+var recommendedSamples = [{
+  title: 'Sellevision',
+  author: 'Augusten Burroughs',
+  description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
+  year: 2000,
+  genre: 'novel',
+  image: 'http://t2.gstatic.com/images?q=tbn:ANd9GcQfUY4XR6yDsV-vNwsS6rN447724qTUnyIEbmtYfBBgGCUxlr7_'
+}, {
+  title: 'Sellevision2',
+  author: 'Augusten Burroughs',
+  description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
+  year: 2000,
+  genre: 'novel',
+  image: 'http://t1.gstatic.com/images?q=tbn:ANd9GcSsKj2GXtKAEp_eIeVY-PnLNuHOa2KvHR0TbyAfeeFu_vGXXK0T'
+}, {
+  title: 'Sellevision3',
+  author: 'Augusten Burroughs',
+  description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
+  year: 2000,
+  genre: 'novel',
+  image: 'http://t0.gstatic.com/images?q=tbn:ANd9GcQpzKRuDCLJ0y33XEl2w5ABvBOlYcNqz-w1LuEKoPTv9Gy1zDB3'
+}];
+
 class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = { step: steps.inputType };
   }
 
-  nextStep(state) {
+  nextStep(state, e) {
+    state.preventDefault();
     this.setState(Object.assign(state, { step: this.state.step + 1 }));
   }
 
@@ -83,7 +107,6 @@ class Main extends React.Component {
       if (App.lastResult !== code) {
         App.lastResult = code;
         that.nextStep({ code: code, barcode: false });
-        console.log(code);
         //     var $node = null, canvas = Quagga.canvas.dom.image;
         //
         //     $node = $('<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>');
@@ -99,6 +122,10 @@ class Main extends React.Component {
     if (this.state.barcode) {
       this.f();
     }
+  }
+
+  toggleModal(book) {
+    this.setState({ overlay: book });
   }
 
   render() {
@@ -123,7 +150,19 @@ class Main extends React.Component {
     );
     if (this.state.step === steps.input) {
       if (this.state.barcode) {
-        content = React.createElement('div', { id: 'interactive', className: 'viewport' });
+        content = React.createElement(
+          'div',
+          null,
+          React.createElement('div', { id: 'interactive', className: 'viewport' }),
+          React.createElement(
+            'a',
+            {
+              onClick: this.nextStep.bind(this, { barcode: false, code: 2000 }),
+              className: 'waves-effect waves-light btn-large'
+            },
+            'Cheat next'
+          )
+        );
       } else {
         content = React.createElement(
           'div',
@@ -140,7 +179,12 @@ class Main extends React.Component {
                 React.createElement(
                   'div',
                   { className: 'input-field col s12' },
-                  React.createElement('input', { placeholder: 'ISBN Code', id: 'isbn', type: 'text', className: 'validate' }),
+                  React.createElement('input', {
+                    placeholder: 'ISBN Code',
+                    id: 'isbn', type: 'text',
+                    className: 'validate',
+                    defaultValue: '9780312426811'
+                  }),
                   React.createElement(
                     'label',
                     { htmlFor: 'isbn' },
@@ -167,10 +211,11 @@ class Main extends React.Component {
           'The book you scanned is: ',
           this.state.code
         ),
-        React.createElement('img', { src: '' }),
+        React.createElement('img', { src: 'http://t1.gstatic.com/images?q=tbn:ANd9GcQu0tMeJYJYBjWhsFnpzTY58Ap5HXAD5PKVG0SedDugIKRRgs6g' }),
         React.createElement(
           'a',
           {
+            href: '#',
             onClick: this.nextStep.bind(this),
             className: 'waves-effect waves-light btn-large'
           },
@@ -178,6 +223,16 @@ class Main extends React.Component {
         )
       );
     } else if (this.state.step === steps.recommendations) {
+      var recommendedElements = recommendedSamples.map((recommendation, i) => {
+        return React.createElement(
+          'div',
+          { className: 'col-xs-4', key: 'rec-' + i },
+          React.createElement(BookRecommendation, {
+            book: recommendation,
+            onClick: this.toggleModal.bind(this, recommendation)
+          })
+        );
+      });
       content = React.createElement(
         'div',
         { className: 'center' },
@@ -192,6 +247,11 @@ class Main extends React.Component {
           'Please select the books that you are mostly interested in to get further recommendations'
         ),
         React.createElement(
+          'div',
+          { className: 'row' },
+          recommendedElements
+        ),
+        React.createElement(
           'a',
           {
             onClick: this.nextStep.bind(this),
@@ -201,6 +261,19 @@ class Main extends React.Component {
         )
       );
     } else if (this.state.step === steps.results) {
+      var recommendedElements = [];
+      for (var i = 0; i < 10; i++) {
+        recommendedSamples.forEach((recommendation, j) => {
+          recommendedElements.push(React.createElement(
+            'div',
+            { className: 'col-xs-4', key: 'rec-' + j + '-' + i },
+            React.createElement(BookPicture, {
+              book: recommendation,
+              onClick: this.toggleModal.bind(this, recommendation)
+            })
+          ));
+        });
+      }
       content = React.createElement(
         'div',
         { className: 'center' },
@@ -220,12 +293,7 @@ class Main extends React.Component {
               { className: 'input-field col s12' },
               React.createElement(
                 'select',
-                null,
-                React.createElement(
-                  'option',
-                  { value: '', disabled: true, selected: true },
-                  'Sort By:'
-                ),
+                { defaultValue: 'Sort by: ' },
                 React.createElement(
                   'option',
                   { value: 'title' },
@@ -244,6 +312,11 @@ class Main extends React.Component {
               )
             )
           )
+        ),
+        React.createElement(
+          'div',
+          { className: 'row' },
+          recommendedElements
         )
       );
     }
@@ -251,7 +324,11 @@ class Main extends React.Component {
       'div',
       null,
       React.createElement(Header, null),
-      content
+      content,
+      this.state.overlay ? React.createElement(BookModal, {
+        onClick: this.toggleModal.bind(this, null),
+        book: this.state.overlay
+      }) : null
     );
   }
 }

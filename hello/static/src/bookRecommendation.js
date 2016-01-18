@@ -8,14 +8,14 @@ class BookRecommendation extends React.Component {
 
   render() {
     return (
-      <BookPicture {...this.props}>
-      <div className="switch">
-        <label>
-          Off
-          <input type="checkbox">
-          <span className="lever"></span>
-          On
-        </label>
+      <div>
+        <BookPicture {...this.props} />
+        <div className="switch">
+          <label>
+            <input type="checkbox"/>
+            <span className="lever"></span>
+          </label>
+        </div>
       </div>
     );
   }

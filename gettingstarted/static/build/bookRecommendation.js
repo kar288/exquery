@@ -5,27 +5,21 @@ class BookRecommendation extends React.Component {
     super(props);
     // this.state = {count: props.initialCount};
   }
+
   render() {
     return React.createElement(
       "div",
-      { className: "row", onClick: this.props.onClick },
+      null,
+      React.createElement(BookPicture, this.props),
       React.createElement(
         "div",
-        { className: "col-xs-2" },
+        { className: "switch" },
         React.createElement(
-          "a",
-          { className: "btn-floating btn-large waves-effect waves-light red" },
-          React.createElement(
-            "i",
-            { className: "material-icons" },
-            this.props.icon
-          )
+          "label",
+          null,
+          React.createElement("input", { type: "checkbox" }),
+          React.createElement("span", { className: "lever" })
         )
-      ),
-      React.createElement(
-        "div",
-        { className: "col-xs-10" },
-        this.props.text
       )
     );
   }
