@@ -38,7 +38,9 @@ class Main extends React.Component {
   }
 
   nextStep(state, e) {
-    state.preventDefault();
+    if (!state.state) {
+      state.preventDefault();
+    }
     this.setState(Object.assign(state, { step: this.state.step + 1 }));
   }
 
@@ -106,7 +108,7 @@ class Main extends React.Component {
       var code = result.codeResult.code;
       if (App.lastResult !== code) {
         App.lastResult = code;
-        that.nextStep({ code: code, barcode: false });
+        that.nextStep({ code: code, barcode: false, state: true });
         //     var $node = null, canvas = Quagga.canvas.dom.image;
         //
         //     $node = $('<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>');
@@ -138,7 +140,7 @@ class Main extends React.Component {
         'Get recommendations based on a book of your liking:'
       ),
       React.createElement(BookInputOption, {
-        onClick: this.nextStep.bind(this, { barcode: true }),
+        onClick: this.nextStep.bind(this, { barcode: true, state: true }),
         icon: 'camera',
         text: 'Scan the books bar code'
       }),
@@ -153,11 +155,13 @@ class Main extends React.Component {
         content = React.createElement(
           'div',
           null,
-          React.createElement('div', { id: 'interactive', className: 'viewport' }),
+          React.createElement('div',
+            { id: 'interactive', className: 'viewport' }),
           React.createElement(
             'a',
             {
-              onClick: this.nextStep.bind(this, { barcode: false, code: 2000 }),
+              onClick: this.nextStep.bind(this,
+                { barcode: false, code: 2000, state: true }),
               className: 'waves-effect waves-light btn-large'
             },
             'Cheat next'
