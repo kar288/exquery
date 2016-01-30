@@ -32,4 +32,18 @@ def db(request):
 
 def getBookInfo(request, isbn):
     meta_dict = meta(isbn, service='goob')
+    # print(amazon)
+    # response = amazon.ItemLookup(ItemId="B007OZNUCE")
+    # print(response)
+    # api = API(locale='de')
+    # params = {
+    #     'ResponseGroup' : 'Images',
+    #     'SearchIndex' : 'All',
+    #     'IdType' : 'ISBN',
+    # }
+    # root = api.item_lookup(isbn, **params)
+    # url = root.Items.Item.LargeImage.URL.pyval
+    # name, ext = os.path.splitext(url)
+    # path = '%s%s' % (id, ext)
+    # print path
     return HttpResponse(json.dumps(meta_dict), content_type="application/json")

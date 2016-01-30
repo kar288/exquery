@@ -34,13 +34,14 @@ var recommendedSamples = [{
 class Main extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { step: steps.inputType };
+    this.state = {
+      step: steps.inputType,
+      code: '9780312426811'
+    };
   }
 
   nextStep(state, e) {
-    if (!state.state) {
-      state.preventDefault();
-    }
+    state.preventDefault();
     this.setState(Object.assign(state, { step: this.state.step + 1 }));
   }
 
@@ -108,7 +109,7 @@ class Main extends React.Component {
       var code = result.codeResult.code;
       if (App.lastResult !== code) {
         App.lastResult = code;
-        that.nextStep({ code: code, barcode: false, state: true });
+        that.nextStep({ code: code, barcode: false });
         //     var $node = null, canvas = Quagga.canvas.dom.image;
         //
         //     $node = $('<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>');
@@ -130,6 +131,10 @@ class Main extends React.Component {
     this.setState({ overlay: book });
   }
 
+  isbnChange(e) {
+    this.setState({ code: e.target.value });
+  }
+
   render() {
     var content = React.createElement(
       'div',
@@ -140,7 +145,7 @@ class Main extends React.Component {
         'Get recommendations based on a book of your liking:'
       ),
       React.createElement(BookInputOption, {
-        onClick: this.nextStep.bind(this, { barcode: true, state: true }),
+        onClick: this.nextStep.bind(this, { barcode: true }),
         icon: 'camera',
         text: 'Scan the books bar code'
       }),
@@ -155,13 +160,11 @@ class Main extends React.Component {
         content = React.createElement(
           'div',
           null,
-          React.createElement('div',
-            { id: 'interactive', className: 'viewport' }),
+          React.createElement('div', { id: 'interactive', className: 'viewport' }),
           React.createElement(
             'a',
             {
-              onClick: this.nextStep.bind(this,
-                { barcode: false, code: 2000, state: true }),
+              onClick: this.nextStep.bind(this, { barcode: false, code: 2000 }),
               className: 'waves-effect waves-light btn-large'
             },
             'Cheat next'
@@ -187,7 +190,8 @@ class Main extends React.Component {
                     placeholder: 'ISBN Code',
                     id: 'isbn', type: 'text',
                     className: 'validate',
-                    defaultValue: '9780312426811'
+                    value: this.state.code,
+                    onChange: this.isbnChange.bind(this)
                   }),
                   React.createElement(
                     'label',
@@ -206,6 +210,9 @@ class Main extends React.Component {
         );
       }
     } else if (this.state.step === steps.confirmation) {
+      $.getJSON('/getBookInfo/' + this.state.code + '/', function (data) {
+        console.log(data);
+      });
       content = React.createElement(
         'div',
         { className: 'center' },
@@ -215,7 +222,7 @@ class Main extends React.Component {
           'The book you scanned is: ',
           this.state.code
         ),
-        React.createElement('img', { src: 'http://t1.gstatic.com/images?q=tbn:ANd9GcQu0tMeJYJYBjWhsFnpzTY58Ap5HXAD5PKVG0SedDugIKRRgs6g' }),
+        React.createElement('img', { src: 'http://covers.openlibrary.org/b/isbn/' + this.state.code + '-L.jpg' }),
         React.createElement(
           'a',
           {

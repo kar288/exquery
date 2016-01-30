@@ -1,4 +1,5 @@
 'use strict';
+
 const steps = {
   'inputType': 0,
   'input': 1,
@@ -6,7 +7,6 @@ const steps = {
   'recommendations': 3,
   'results': 4
 };
-
 
 var recommendedSamples = [
   {
@@ -36,7 +36,10 @@ var recommendedSamples = [
 class Main extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {step: steps.inputType};
+    this.state = {
+      step: steps.inputType,
+      code: '9780312426811',
+    };
   }
 
   nextStep(state, e) {
@@ -132,6 +135,10 @@ class Main extends React.Component {
     this.setState({overlay: book});
   }
 
+  isbnChange(e) {
+    this.setState({code: e.target.value});
+  }
+
   render() {
     var content = (
       <div className="center">
@@ -173,7 +180,8 @@ class Main extends React.Component {
                       placeholder="ISBN Code"
                       id="isbn" type="text"
                       className="validate"
-                      defaultValue="9780312426811"
+                      value={this.state.code}
+                      onChange={this.isbnChange.bind(this)}
                     />
                     <label htmlFor="isbn">ISBN Code</label>
                   </div>
@@ -187,12 +195,15 @@ class Main extends React.Component {
         );
       }
     } else if (this.state.step === steps.confirmation) {
+      $.getJSON('/getBookInfo/' + this.state.code + '/', function(data) {
+        console.log(data);
+      });
       content = (
         <div className="center">
           <h5>
             The book you scanned is: {this.state.code}
           </h5>
-          <img src="http://t1.gstatic.com/images?q=tbn:ANd9GcQu0tMeJYJYBjWhsFnpzTY58Ap5HXAD5PKVG0SedDugIKRRgs6g"/>
+          <img src={'http://covers.openlibrary.org/b/isbn/' + this.state.code + '-L.jpg'}/>
           <a
             href='#'
             onClick={this.nextStep.bind(this)}
