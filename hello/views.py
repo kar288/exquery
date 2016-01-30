@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import os
 from .models import Greeting
+import json
+import sys
+from isbntools.app import *
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -19,10 +22,14 @@ def index(request):
 
 
 def db(request):
-
     greeting = Greeting()
     greeting.save()
 
     greetings = Greeting.objects.all()
 
     return render(request, 'db.html', {'greetings': greetings})
+
+
+def getBookInfo(request, isbn):
+    meta_dict = meta(isbn, service='goob')
+    return HttpResponse(json.dumps(meta_dict), content_type="application/json")
