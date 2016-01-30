@@ -4,7 +4,7 @@ import os
 from .models import Greeting
 import json
 import sys
-# from isbntools.app import *
+from isbntools.app import *
 
 from django.conf import settings
 from django.conf.urls.static import static
