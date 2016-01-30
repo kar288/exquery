@@ -4,7 +4,7 @@ import os
 from .models import Greeting
 import json
 import sys
-from isbntools.app import *
+# from isbntools.app import *
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -31,7 +31,8 @@ def db(request):
 
 
 def getBookInfo(request, isbn):
-    meta_dict = meta(isbn, service='goob')
+    meta_dict = '';
+    # meta_dict = meta(isbn, service='goob')
     # print(amazon)
     # response = amazon.ItemLookup(ItemId="B007OZNUCE")
     # print(response)
