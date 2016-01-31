@@ -1,42 +1,14 @@
 # exquery
-Visual Seeking Systems
+Visual Seeking Systems Class project
 
-# python-getting-started
+Exquery is a media search engine for students who use the public library. Given an item it will search for similar items. A narrow set of recommendations is preliminarily given to the user after they input a book. If more results are desired keywords from recommendations will be used to expand them. Search engines have several problems: Formulating search queries is hard. It is also challenging to sort through search results. It is important to get the most relevant results first but it is not always clear what “most relevant” means. To solve this, Exquery provides the opportunity not to sort through results finding things that are important to the user, he can save time by filtering for this in the beginning.
 
-A barebones Python app, which can easily be deployed to Heroku.
+#Install dependencies
 
-This application supports the [Getting Started with Python on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python) article - check it out.
+pip install -r requirements.txt
 
-## Running Locally
+#Running project
 
-Make sure you have Python [installed properly](http://install.python-guide.org).  Also, install the [Heroku Toolbelt](https://toolbelt.heroku.com/) and [Postgres](https://devcenter.heroku.com/articles/heroku-postgresql#local-setup).
+From root directory run
 
-```sh
-$ git clone git@github.com:heroku/python-getting-started.git
-$ cd python-getting-started
-$ pip install -r requirements.txt
-$ createdb python_getting_started
-$ heroku local:run python manage.py migrate
-$ python manage.py collectstatic
-$ heroku local
-```
-
-Your app should now be running on [localhost:5000](http://localhost:5000/).
-
-## Deploying to Heroku
-
-```sh
-$ heroku create
-$ git push heroku master
-$ heroku run python manage.py migrate
-$ heroku open
-```
-or
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
-## Documentation
-
-For more information about using Python on Heroku, see these Dev Center articles:
-
-- [Python on Heroku](https://devcenter.heroku.com/categories/python)
+python manage.py runserver
