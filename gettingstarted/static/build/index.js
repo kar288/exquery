@@ -18,7 +18,7 @@ class Main extends React.Component {
     super(props);
     this.state = {
       step: steps.inputType,
-      code: '9785170811373',
+      // code: '9785170811373',
       sorting: 'title'
     };
   }
