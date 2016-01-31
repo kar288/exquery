@@ -41,6 +41,7 @@ class Main extends React.Component {
   }
 
   nextStep(state, e) {
+    debugger;
     if (state.preventDefault) {
       state.preventDefault();
     }
