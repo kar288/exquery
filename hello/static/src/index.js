@@ -19,7 +19,7 @@ class Main extends React.Component {
     this.state = {
       step: steps.inputType,
       // code: '9785170811373',
-      sorting: 'title',
+      sorting: 'author',
     };
   }
 
