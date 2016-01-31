@@ -9,11 +9,11 @@ class BookRecommendation extends React.Component {
   render() {
     return (
       <div>
-        <BookPicture {...this.props} />
-        <div className="switch">
+        <BookPicture {...this.props} horizontal={true} />
+        <div className='switch'>
           <label>
-            <input type="checkbox"/>
-            <span className="lever"></span>
+            <input type='checkbox'/>
+            <span className='lever'></span>
           </label>
         </div>
       </div>

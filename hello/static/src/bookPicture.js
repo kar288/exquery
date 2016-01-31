@@ -14,16 +14,17 @@ class BookPicture extends React.Component {
   }
 
   render() {
+    var horizontalClass = this.props.horizontal ? 'horizontal' : '';
     var content = (
       <div
-        className="book-picture"
+        className={'book-picture ' + horizontalClass}
         style={{backgroundImage: 'url(' + this.props.book.image + ')'}}
         onClick={this.props.onClick}
       />
     );
     // if (this.state.overlay) {
     //   content = (
-    //     <div className="book-overlay" onClick={this.toggleDetails.bind(this)} >
+    //     <div className='book-overlay' onClick={this.toggleDetails.bind(this)} >
     //       {this.props.book.description}
     //     </div>
     //   );

@@ -35,7 +35,8 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      step: steps.inputType
+      step: steps.inputType,
+      code: '9785170811373'
     };
   }
 
@@ -216,7 +217,11 @@ class Main extends React.Component {
               ),
               React.createElement(
                 'button',
-                { className: 'btn waves-effect waves-light', type: 'submit', name: 'action' },
+                {
+                  className: 'btn waves-effect waves-light',
+                  type: 'submit',
+                  name: 'action'
+                },
                 'Submit'
               )
             )
@@ -233,7 +238,7 @@ class Main extends React.Component {
           'The book you scanned is: ',
           this.state.bookInfo.title
         ),
-        React.createElement('img', { src: this.state.bookInfo.thumbnail }),
+        React.createElement('img', { className: 'big-book-cover', src: this.state.bookInfo.thumbnail }),
         React.createElement(
           'a',
           {
@@ -248,7 +253,7 @@ class Main extends React.Component {
       var recommendedElements = recommendedSamples.map((recommendation, i) => {
         return React.createElement(
           'div',
-          { className: 'col-xs-4', key: 'rec-' + i },
+          { className: 's', key: 'rec-' + i },
           React.createElement(BookRecommendation, {
             book: recommendation,
             onClick: this.toggleModal.bind(this, recommendation)

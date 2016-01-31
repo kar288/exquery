@@ -38,6 +38,7 @@ class Main extends React.Component {
     super(props);
     this.state = {
       step: steps.inputType,
+      code: '9785170811373',
     };
   }
 
@@ -163,7 +164,7 @@ class Main extends React.Component {
 
   render() {
     var content = (
-      <div className="center">
+      <div className='center'>
         <h5>Get recommendations based on a book of your liking:</h5>
         <BookInputOption
           onClick={this.nextStep.bind(this, {barcode: true})}
@@ -181,11 +182,11 @@ class Main extends React.Component {
       if (this.state.barcode) {
         content = (
           <div>
-            <div id="interactive" className="viewport"></div>
+            <div id='interactive' className='viewport'></div>
 
             <a
               onClick={this.nextStep.bind(this, {barcode: false, code: 2000})}
-              className="waves-effect waves-light btn-large"
+              className='waves-effect waves-light btn-large'
             >
               Cheat next
             </a>
@@ -193,22 +194,26 @@ class Main extends React.Component {
         );
       } else {
         content = (
-          <div className="center">
-            <div className="row">
-              <form className="col s12" onSubmit={this.nextStep.bind(this)}>
-                <div className="row">
-                  <div className="input-field col s12">
+          <div className='center'>
+            <div className='row'>
+              <form className='col s12' onSubmit={this.nextStep.bind(this)}>
+                <div className='row'>
+                  <div className='input-field col s12'>
                     <input
-                      placeholder="ISBN Code"
-                      id="isbn" type="text"
-                      className="validate"
+                      placeholder='ISBN Code'
+                      id='isbn' type='text'
+                      className='validate'
                       value={this.state.code}
                       onChange={this.isbnChange.bind(this)}
                     />
-                    <label htmlFor="isbn">ISBN Code</label>
+                    <label htmlFor='isbn'>ISBN Code</label>
                   </div>
                 </div>
-                <button className="btn waves-effect waves-light" type="submit" name="action">
+                <button
+                  className='btn waves-effect waves-light'
+                  type='submit'
+                  name='action'
+                >
                   Submit
                 </button>
               </form>
@@ -218,15 +223,15 @@ class Main extends React.Component {
       }
     } else if (this.state.step === steps.confirmation) {
       content = (
-        <div className="center">
+        <div className='center'>
           <h5>
             The book you scanned is: {this.state.bookInfo.title}
           </h5>
-          <img src={this.state.bookInfo.thumbnail}/>
+          <img className='big-book-cover' src={this.state.bookInfo.thumbnail}/>
           <a
             href='#'
             onClick={this.nextStep.bind(this)}
-            className="waves-effect waves-light btn-large"
+            className='waves-effect waves-light btn-large'
           >
             Get recommendations
           </a>
@@ -235,7 +240,7 @@ class Main extends React.Component {
     } else if (this.state.step === steps.recommendations) {
       var recommendedElements = recommendedSamples.map((recommendation, i) => {
         return (
-          <div className="col-xs-4" key={'rec-' + i}>
+          <div className='s' key={'rec-' + i}>
             <BookRecommendation
               book={recommendation}
               onClick={this.toggleModal.bind(this, recommendation)}
@@ -244,7 +249,7 @@ class Main extends React.Component {
         );
       });
       content = (
-        <div className="center">
+        <div className='center'>
           <h5>
             Similar books are:
           </h5>
@@ -253,12 +258,12 @@ class Main extends React.Component {
             Please select the books that you are mostly
             interested in to get further recommendations
           </div>
-          <div className="row">
+          <div className='row'>
             {recommendedElements}
           </div>
           <a
             onClick={this.nextStep.bind(this)}
-            className="waves-effect waves-light btn-large"
+            className='waves-effect waves-light btn-large'
           >
             Expand recommendations
           </a>
@@ -269,7 +274,7 @@ class Main extends React.Component {
       for (var i = 0; i < 10; i++) {
         recommendedSamples.forEach((recommendation, j) => {
           recommendedElements.push(
-            <div className="col-xs-4" key={'rec-' + j + '-' + i} >
+            <div className='col-xs-4' key={'rec-' + j + '-' + i} >
               <BookPicture
                 book={recommendation}
                 onClick={this.toggleModal.bind(this, recommendation)}
@@ -279,16 +284,16 @@ class Main extends React.Component {
         });
       }
       content = (
-        <div className="center">
-          <div className="row">
-            <div className="col-xs-9">
+        <div className='center'>
+          <div className='row'>
+            <div className='col-xs-9'>
               Results:
             </div>
-            <div className="col-xs-3">
-              <div className="input-field col s12">
-                <select defaultValue="Sort by: ">
-                  <option value="title">Title</option>
-                  <option value="author">Author</option>
+            <div className='col-xs-3'>
+              <div className='input-field col s12'>
+                <select defaultValue='Sort by: '>
+                  <option value='title'>Title</option>
+                  <option value='author'>Author</option>
                 </select>
                 <label>Sort</label>
               </div>
