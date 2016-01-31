@@ -43,12 +43,11 @@ class Main extends React.Component {
   }
 
   nextStep(state, e) {
-    debugger;
     if (state.preventDefault) {
       state.preventDefault();
     }
     var newState = Object.assign(state, {step: this.state.step + 1});
-    if (this.state.step + 1 === steps.confirmation) {
+    if (newState.step === steps.confirmation) {
       var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
       $.getJSON(googleBookAPI + this.state.code, function(data) {
         var book = data.items[0];
