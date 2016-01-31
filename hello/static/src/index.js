@@ -8,31 +8,6 @@ const steps = {
   'results': 4
 };
 
-var recommendedSamples = [
-  {
-    title: 'Sellevision',
-    author: 'Augusten Burroughs',
-    description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
-    year: 2000,
-    genre: 'novel',
-    image: 'http://t2.gstatic.com/images?q=tbn:ANd9GcQfUY4XR6yDsV-vNwsS6rN447724qTUnyIEbmtYfBBgGCUxlr7_',
-  }, {
-    title: 'Sellevision2',
-    author: 'Augusten Burroughs',
-    description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
-    year: 2000,
-    genre: 'novel',
-    image: 'http://t1.gstatic.com/images?q=tbn:ANd9GcSsKj2GXtKAEp_eIeVY-PnLNuHOa2KvHR0TbyAfeeFu_vGXXK0T'
-  }, {
-    title: 'Sellevision3',
-    author: 'Augusten Burroughs',
-    description: 'Sellevision a novel is the first work published by Augusten Burroughs, author of the best-selling books Running with Scissors, Dry, and Magical Thinking. Unlike Burroughs’ subsequent memoirs, Sellevision is a work of fiction.',
-    year: 2000,
-    genre: 'novel',
-    image: 'http://t0.gstatic.com/images?q=tbn:ANd9GcQpzKRuDCLJ0y33XEl2w5ABvBOlYcNqz-w1LuEKoPTv9Gy1zDB3'
-  },
-];
-
 class Main extends React.Component {
   constructor(props) {
     super(props);
@@ -47,27 +22,54 @@ class Main extends React.Component {
       state.preventDefault();
     }
     var newState = Object.assign(state, {step: this.state.step + 1});
-    if (this.state.step + 1 === steps.confirmation) {
+    if (newState.step === steps.confirmation) {
       var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
       var code = this.state.code ? this.state.code : newState.code;
-      $.getJSON(googleBookAPI + code, function(data) {
+      $.getJSON(this.googleApiUrl(code), function(data) {
         if (data.totalItems === 0) {
           return this.setState(newState);
         }
-        var book = data.items[0];
-        var bookInfo = {
-          authors: book.volumeInfo.authors,
-          title: book.volumeInfo.title,
-          description: book.volumeInfo.description,
-          thumbnail: book.volumeInfo.imageLinks.thumbnail
-        };
+        var bookInfo = this.getBookInfo(data.items[0]);
         this.setState(
           Object.assign(newState, {bookInfo: bookInfo})
         );
       }.bind(this));
+    } else if (newState.step === steps.recommendations) {
+      $.getJSON('/getBookRecommendations/' + this.state.code, function(data) {
+        var recommendationIsbns = data.recommendations;
+        var doneRecs = 0;
+        var recommendations = [];
+        recommendationIsbns.forEach(code => {
+          $.getJSON(this.googleApiUrl(code), function(data) {
+            if (data.totalItems === 0) {
+              return this.setState(newState);
+            }
+            var bookInfo = this.getBookInfo(data.items[0]);
+            recommendations.push(bookInfo);
+            if (recommendations.length === recommendationIsbns.length) {
+              this.setState(
+                Object.assign(newState, {recommendations: recommendations})
+              );
+            }
+          }.bind(this));
+        });
+      }.bind(this));
     } else {
       this.setState(newState);
     }
+  }
+
+  googleApiUrl(isbn) {
+    return 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn;
+  }
+
+  getBookInfo(book) {
+    return {
+      authors: book.volumeInfo.authors,
+      title: book.volumeInfo.title,
+      description: book.volumeInfo.description,
+      thumbnail: book.volumeInfo.imageLinks.thumbnail
+    };
   }
 
   f() {
@@ -238,12 +240,12 @@ class Main extends React.Component {
         </div>
       );
     } else if (this.state.step === steps.recommendations) {
-      var recommendedElements = recommendedSamples.map((recommendation, i) => {
+      var recommendedElements = this.state.recommendations.map((book, i) => {
         return (
           <div className='s' key={'rec-' + i}>
             <BookRecommendation
-              book={recommendation}
-              onClick={this.toggleModal.bind(this, recommendation)}
+              book={book}
+              onClick={this.toggleModal.bind(this, book)}
             />
           </div>
         );

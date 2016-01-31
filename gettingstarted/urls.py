@@ -14,5 +14,5 @@ urlpatterns = patterns('',
     url(r'^db', hello.views.db, name='db'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^getBookInfo/(?P<isbn>\d+)/$', hello.views.getBookInfo, name='getBookInfo'),
-    url(r'^getBookRecommendations/(?P<isbn>\d+)/$', hello.views.getBookRecommendations, name='getBookRecommendations'),
+    url(r'^getBookRecommendations/(?P<isbn>\d+)$', hello.views.getBookRecommendations, name='getBookRecommendations'),
 )

@@ -7,24 +7,24 @@ class BookInputOption extends React.Component {
   }
   render() {
     return React.createElement(
-      "div",
-      { className: "row something BookInputOption", onClick: this.props.onClick },
+      'div',
+      { className: 'row BookInputOption', onClick: this.props.onClick },
       React.createElement(
-        "div",
-        { className: "col-xs-2" },
+        'div',
+        { className: 'col-xs-2' },
         React.createElement(
-          "a",
-          { className: "btn-floating btn-large waves-effect waves-light red" },
+          'a',
+          { className: 'btn-floating btn-large waves-effect waves-light red' },
           React.createElement(
-            "i",
-            { className: "material-icons" },
+            'i',
+            { className: 'material-icons' },
             this.props.icon
           )
         )
       ),
       React.createElement(
-        "div",
-        { className: "col-xs-10" },
+        'div',
+        { className: 'col-xs-10' },
         this.props.text
       )
     );

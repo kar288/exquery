@@ -50,7 +50,7 @@
       background-color: rgba(0,0,0,0.5);
       height: 100%;
       left: 0;
-      padding: 30px;
+      padding: 20px;
       position: fixed;
       top: 0;
       z-index: 100;
@@ -58,8 +58,28 @@
     .book-modal-content {
       background-color: white;
       height: 100%;
-      padding: 20px;
       box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    }
+    .book-modal-image {
+      background-position: 50%;
+      background-size: cover;
+      opacity: 0.3;
+      position: absolute;
+    }
+    .book-modal-info {
+      padding: 20px;
+    }
+    .book-modal-description {
+      display: -webkit-box;
+      max-width: 400px;
+      height: 90px;
+      margin: 0 auto;
+      font-size: 16px;
+      line-height: 1.4;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .filter-add {
       position: absolute;
