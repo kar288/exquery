@@ -219,7 +219,7 @@ class Main extends React.Component {
           <h5>
             The book you scanned is: {this.state.bookInfo.title}
           </h5>
-          <img src={'http://covers.openlibrary.org/b/isbn/' + this.state.code + '-L.jpg'}/>
+          <img src={this.state.bookInfo.thumbnail}/>
           <a
             href='#'
             onClick={this.nextStep.bind(this)}

@@ -230,7 +230,7 @@ class Main extends React.Component {
           'The book you scanned is: ',
           this.state.bookInfo.title
         ),
-        React.createElement('img', { src: 'http://covers.openlibrary.org/b/isbn/' + this.state.code + '-L.jpg' }),
+        React.createElement('img', { src: this.state.bookInfo.thumbnail }),
         React.createElement(
           'a',
           {
