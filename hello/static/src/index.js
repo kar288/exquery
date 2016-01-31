@@ -33,7 +33,9 @@ class Main extends React.Component {
       var code = this.state.code ? this.state.code : newState.code;
       $.getJSON(this.googleApiUrl(code), function(data) {
         if (data.totalItems === 0) {
-          return this.setState(newState);
+          this.setState(
+            Object.assign(newState, {error: 'Couldn\'t find book'})
+          );
         }
         var bookInfo = this.getBookInfo(data.items[0], code);
         this.setState(
@@ -244,7 +246,9 @@ class Main extends React.Component {
         />
       </div>
     );
-    if (this.state.step === steps.input) {
+    if (this.state.error) {
+      content = <div>{this.state.error}</div>;
+    } else if (this.state.step === steps.input) {
       if (this.state.barcode) {
         content = (
           <div>

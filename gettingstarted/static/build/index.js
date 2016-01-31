@@ -33,7 +33,7 @@ class Main extends React.Component {
       var code = this.state.code ? this.state.code : newState.code;
       $.getJSON(this.googleApiUrl(code), function (data) {
         if (data.totalItems === 0) {
-          return this.setState(newState);
+          this.setState(Object.assign(newState, { error: 'Couldn\'t find book' }));
         }
         var bookInfo = this.getBookInfo(data.items[0], code);
         this.setState(Object.assign(newState, { bookInfo: bookInfo }));
@@ -231,7 +231,13 @@ class Main extends React.Component {
         text: 'Enter books ISBN code'
       })
     );
-    if (this.state.step === steps.input) {
+    if (this.state.error) {
+      content = React.createElement(
+        'div',
+        null,
+        this.state.error
+      );
+    } else if (this.state.step === steps.input) {
       if (this.state.barcode) {
         content = React.createElement(
           'div',
