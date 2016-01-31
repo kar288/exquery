@@ -19,7 +19,7 @@ class BookRecommendation extends React.Component {
         React.createElement(
           'label',
           null,
-          React.createElement('input', { type: 'checkbox' }),
+          React.createElement('input', { type: 'checkbox', onClick: this.props.onSwitch }),
           React.createElement('span', { className: 'lever' })
         )
       )

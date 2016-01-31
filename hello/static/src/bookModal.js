@@ -25,7 +25,7 @@ class BookModal extends React.Component {
               {this.props.book.title}
             </h1>
             <h5>
-              {this.props.book.authors}
+              {this.props.book.author}
             </h5>
             <div className='book-modal-description'>
               {this.props.book.description}

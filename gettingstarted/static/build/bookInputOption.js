@@ -11,7 +11,7 @@ class BookInputOption extends React.Component {
       { className: 'row BookInputOption', onClick: this.props.onClick },
       React.createElement(
         'div',
-        { className: 'col-xs-2' },
+        { className: 'col s2' },
         React.createElement(
           'a',
           { className: 'btn-floating btn-large waves-effect waves-light red' },
@@ -24,7 +24,7 @@ class BookInputOption extends React.Component {
       ),
       React.createElement(
         'div',
-        { className: 'col-xs-10' },
+        { className: 'col s10' },
         this.props.text
       )
     );

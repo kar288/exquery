@@ -15,4 +15,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^getBookInfo/(?P<isbn>\d+)/$', hello.views.getBookInfo, name='getBookInfo'),
     url(r'^getBookRecommendations/(?P<isbn>\d+)$', hello.views.getBookRecommendations, name='getBookRecommendations'),
+    url(r'^getResults/(?P<isbns>[\d,]+)$', hello.views.getResults, name='getResults'),
 ]

@@ -8,12 +8,18 @@ const steps = {
   'results': 4
 };
 
+const sortOptions = {
+  'author': 0,
+  'title': 1
+};
+
 class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       step: steps.inputType,
-      code: '9785170811373'
+      code: '9785170811373',
+      sorting: 'title'
     };
   }
 
@@ -29,7 +35,7 @@ class Main extends React.Component {
         if (data.totalItems === 0) {
           return this.setState(newState);
         }
-        var bookInfo = this.getBookInfo(data.items[0]);
+        var bookInfo = this.getBookInfo(data.items[0], code);
         this.setState(Object.assign(newState, { bookInfo: bookInfo }));
       }.bind(this));
     } else if (newState.step === steps.recommendations) {
@@ -42,10 +48,30 @@ class Main extends React.Component {
             if (data.totalItems === 0) {
               return this.setState(newState);
             }
-            var bookInfo = this.getBookInfo(data.items[0]);
+            var bookInfo = this.getBookInfo(data.items[0], code);
             recommendations.push(bookInfo);
             if (recommendations.length === recommendationIsbns.length) {
               this.setState(Object.assign(newState, { recommendations: recommendations }));
+            }
+          }.bind(this));
+        });
+      }.bind(this));
+    } else if (newState.step === steps.results) {
+      var url = '/getResults/' + Array.from(this.state.onBooks).join(',');
+      $.getJSON(url, function (data) {
+        var resultIsbns = data.results;
+        var results = [];
+        resultIsbns.forEach(code => {
+          $.getJSON(this.googleApiUrl(code), function (data) {
+            if (data.totalItems === 0) {
+              results.push({});
+            } else {
+              var bookInfo = this.getBookInfo(data.items[0], code);
+              results.push(bookInfo);
+            }
+            if (results.length === resultIsbns.length) {
+              this.sortResults(results, this.state.sorting);
+              this.setState(Object.assign(newState, { results: results }));
             }
           }.bind(this));
         });
@@ -59,12 +85,19 @@ class Main extends React.Component {
     return 'https://www.googleapis.com/books/v1/volumes?q=isbn:' + isbn;
   }
 
-  getBookInfo(book) {
+  getBookInfo(book, code) {
+    var thumbnail = '';
+    if (book.volumeInfo.imageLinks) {
+      thumbnail = book.volumeInfo.imageLinks.thumbnail;
+    } else {
+      console.log(code);
+    }
     return {
-      authors: book.volumeInfo.authors,
+      isbn: code,
+      author: book.volumeInfo.authors[0],
       title: book.volumeInfo.title,
       description: book.volumeInfo.description,
-      thumbnail: book.volumeInfo.imageLinks.thumbnail
+      thumbnail: thumbnail
     };
   }
 
@@ -139,6 +172,10 @@ class Main extends React.Component {
 
   componentDidUpdate() {
     $('select').material_select();
+    $('.select-wrapper').change(function () {
+      var selected = $('.select-wrapper').children('ul').children('.selected').children('span');
+      this.changeSorting(selected.text());
+    }.bind(this));
     if (this.state.barcode) {
       this.f();
     }
@@ -150,6 +187,28 @@ class Main extends React.Component {
 
   isbnChange(e) {
     this.setState({ code: e.target.value });
+  }
+
+  turnBookOff(book, e) {
+    var onBooks = this.state.onBooks || new Set();
+    if (onBooks.has(book.isbn)) {
+      onBooks.delete(book.isbn);
+    } else {
+      onBooks.add(book.isbn);
+    }
+    this.setState({ onBooks: onBooks });
+  }
+
+  sortResults(results, option) {
+    results.sort(function (a, b) {
+      return a[option] > b[option];
+    });
+  }
+
+  changeSorting(option, e) {
+    var results = this.state.results;
+    this.sortResults(results, option);
+    this.setState({ sorting: option, results: results });
   }
 
   render() {
@@ -258,7 +317,8 @@ class Main extends React.Component {
           { className: 's', key: 'rec-' + i },
           React.createElement(BookRecommendation, {
             book: book,
-            onClick: this.toggleModal.bind(this, book)
+            onClick: this.toggleModal.bind(this, book),
+            onSwitch: this.turnBookOff.bind(this, book)
           })
         );
       });
@@ -291,18 +351,16 @@ class Main extends React.Component {
       );
     } else if (this.state.step === steps.results) {
       var recommendedElements = [];
-      for (var i = 0; i < 10; i++) {
-        recommendedSamples.forEach((recommendation, j) => {
-          recommendedElements.push(React.createElement(
-            'div',
-            { className: 'col-xs-4', key: 'rec-' + j + '-' + i },
-            React.createElement(BookPicture, {
-              book: recommendation,
-              onClick: this.toggleModal.bind(this, recommendation)
-            })
-          ));
-        });
-      }
+      this.state.results.forEach((book, j) => {
+        recommendedElements.push(React.createElement(
+          'div',
+          { className: 'col s4', key: 'rec-' + j },
+          React.createElement(BookPicture, {
+            book: book,
+            onClick: this.toggleModal.bind(this, book)
+          })
+        ));
+      });
       content = React.createElement(
         'div',
         { className: 'center' },
@@ -311,28 +369,27 @@ class Main extends React.Component {
           { className: 'row' },
           React.createElement(
             'div',
-            { className: 'col-xs-9' },
+            { className: 'col s6' },
             'Results:'
           ),
           React.createElement(
             'div',
-            { className: 'col-xs-3' },
+            { className: 'col s6' },
             React.createElement(
               'div',
               { className: 'input-field col s12' },
               React.createElement(
                 'select',
                 { defaultValue: 'Sort by: ' },
-                React.createElement(
-                  'option',
-                  { value: 'title' },
-                  'Title'
-                ),
-                React.createElement(
-                  'option',
-                  { value: 'author' },
-                  'Author'
-                )
+                Object.keys(sortOptions).map(function (option, i) {
+                  return React.createElement(
+                    'option',
+                    {
+                      key: 'opt-' + i,
+                      value: option },
+                    option
+                  );
+                }.bind(this))
               ),
               React.createElement(
                 'label',

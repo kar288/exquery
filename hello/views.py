@@ -34,3 +34,18 @@ def getBookInfo(request, isbn):
 
 def getBookRecommendations(request, isbn):
     return JsonResponse({'recommendations': ['9780312422288', '9781429902526', '9780312315948']})
+
+def getResults(request, isbns):
+    isbns = isbns.split(',')
+    for isbn in isbns:
+        print(isbn)
+    return JsonResponse({'results': [
+        '9780312422288',
+        # '9781429902526',
+        # '9780312315948',
+        # '9788420405384',
+        # '9789681902902',
+        # '9781400032716',
+        '9781473205321',
+        '9783453601024'
+    ]})

@@ -12,7 +12,7 @@ class BookRecommendation extends React.Component {
         <BookPicture {...this.props} horizontal={true} />
         <div className='switch'>
           <label>
-            <input type='checkbox'/>
+            <input type='checkbox' onClick={this.props.onSwitch} />
             <span className='lever'></span>
           </label>
         </div>
