@@ -43,84 +43,101 @@ class Main extends React.Component {
   }
 
   nextStep(state, e) {
+    var state = Object.assign(state, {step: this.state.step + 1});
     state.preventDefault();
-    this.setState(
-      Object.assign(state, {step: this.state.step + 1})
-    );
+    if (this.state.step + 1 === steps.confirmation) {
+      var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
+      $.getJSON(googleBookAPI + this.state.code, function(data) {
+        var book = data.items[0];
+        var bookInfo = {
+          authors: book.volumeInfo.authors,
+          title: book.volumeInfo.title,
+          description: book.volumeInfo.description,
+          thumbnail: book.volumeInfo.imageLinks.thumbnail
+        };
+        this.setState(
+          Object.assign(state, {bookInfo: bookInfo})
+        );
+      }.bind(this));
+    } else {
+      this.setState(state);
+    }
   }
 
   f() {
     var that = this;
     var App = {
-        init : function() {
-            Quagga.init(this.state, function(err) {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-                Quagga.start();
-            });
+      init: function() {
+        Quagga.init(this.state, function(err) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          Quagga.start();
+        });
+      },
+      state: {
+        inputStream: {
+          type: 'LiveStream',
+          constraints: {
+            width: 640,
+            height: 480,
+            facing: 'environment' // or user
+          }
         },
-        state: {
-            inputStream: {
-                type : "LiveStream",
-                constraints: {
-                    width: 640,
-                    height: 480,
-                    facing: "environment" // or user
-                }
-            },
-            locator: {
-                patchSize: "medium",
-                halfSample: true
-            },
-            numOfWorkers: 4,
-            decoder: {
-                readers : ["ean_reader"]
-            },
-            locate: true
+        locator: {
+          patchSize: 'medium',
+          halfSample: true
         },
-        lastResult : null
+        numOfWorkers: 4,
+        decoder: {
+          readers: ['ean_reader']
+        },
+        locate: true
+      },
+      lastResult: null
     };
 
     App.init();
 
     Quagga.onProcessed(function(result) {
-        var drawingCtx = Quagga.canvas.ctx.overlay,
-            drawingCanvas = Quagga.canvas.dom.overlay;
+      var drawingCtx = Quagga.canvas.ctx.overlay;
+      var drawingCanvas = Quagga.canvas.dom.overlay;
 
-        if (result) {
-          if (result.boxes) {
-            drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
-            result.boxes.filter(function (box) {
-              return box !== result.box;
-            }).forEach(function (box) {
-              Quagga.ImageDebug.drawPath(box, {x: 0, y: 1}, drawingCtx, {color: "green", lineWidth: 2});
-            });
-          }
-
-          if (result.box) {
-            Quagga.ImageDebug.drawPath(result.box, {x: 0, y: 1}, drawingCtx, {color: "#00F", lineWidth: 2});
-          }
-
-          if (result.codeResult && result.codeResult.code) {
-            Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'}, drawingCtx, {color: 'red', lineWidth: 3});
-          }
+      if (result) {
+        if (result.boxes) {
+          drawingCtx.clearRect(0, 0, parseInt(
+            drawingCanvas.getAttribute('width')),
+            parseInt(drawingCanvas.getAttribute('height')
+          ));
+          result.boxes.filter(function(box) {
+            return box !== result.box;
+          }).forEach(function(box) {
+            Quagga.ImageDebug.drawPath(
+              box, {x: 0, y: 1}, drawingCtx, {color: 'green', lineWidth: 2}
+            );
+          });
         }
+
+        if (result.box) {
+          Quagga.ImageDebug.drawPath(
+            result.box, {x: 0, y: 1}, drawingCtx, {color: '#00F', lineWidth: 2}
+          );
+        }
+
+        if (result.codeResult && result.codeResult.code) {
+          Quagga.ImageDebug.drawPath(result.line, {x: 'x', y: 'y'},
+            drawingCtx, {color: 'red', lineWidth: 3});
+        }
+      }
     });
 
     Quagga.onDetected(function(result) {
-        var code = result.codeResult.code;
-        if (App.lastResult !== code) {
-          App.lastResult = code;
-          that.nextStep({code: code, barcode: false});
-        //     var $node = null, canvas = Quagga.canvas.dom.image;
-        //
-        //     $node = $('<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>');
-        //     $node.find("img").attr("src", canvas.toDataURL());
-        //     $node.find("h4.code").html(code);
-        //     $("#result_strip ul.thumbnails").prepend($node);
-        }
+      var code = result.codeResult.code;
+      if (App.lastResult !== code) {
+        App.lastResult = code;
+        that.nextStep({code: code, barcode: false});
+      }
     });
   }
 
@@ -195,13 +212,10 @@ class Main extends React.Component {
         );
       }
     } else if (this.state.step === steps.confirmation) {
-      $.getJSON('/getBookInfo/' + this.state.code + '/', function(data) {
-        console.log(data);
-      });
       content = (
         <div className="center">
           <h5>
-            The book you scanned is: {this.state.code}
+            The book you scanned is: {this.state.bookInfo.title}
           </h5>
           <img src={'http://covers.openlibrary.org/b/isbn/' + this.state.code + '-L.jpg'}/>
           <a
@@ -275,11 +289,11 @@ class Main extends React.Component {
               </div>
             </div>
           </div>
-          <div className="row">
+          <div className='row'>
             {recommendedElements}
           </div>
         </div>
-      )
+      );
     }
     return (
       <div>
@@ -301,9 +315,3 @@ ReactDOM.render(
   (<Main/>),
   document.getElementById('example')
 );
-
-
-var a = [1, 2, 3, 4, 5];
-// a.forEach(b => console.log(b));
-
-console.log('bbbb');

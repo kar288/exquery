@@ -6,8 +6,6 @@ bottlenose==0.6.3
 dj-database-url==0.3.0
 django-postgrespool==0.3.0
 gunicorn==19.3.0
-isbnlib==3.5.7
-isbntools==4.2.6
 lxml==3.5.0
 psycopg2==2.6
 python-amazon-product-api==0.2.8

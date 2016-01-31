@@ -41,8 +41,23 @@ class Main extends React.Component {
   }
 
   nextStep(state, e) {
+    var state = Object.assign(state, { step: this.state.step + 1 });
     state.preventDefault();
-    this.setState(Object.assign(state, { step: this.state.step + 1 }));
+    if (this.state.step + 1 === steps.confirmation) {
+      var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
+      $.getJSON(googleBookAPI + this.state.code, function (data) {
+        var book = data.items[0];
+        var bookInfo = {
+          authors: book.volumeInfo.authors,
+          title: book.volumeInfo.title,
+          description: book.volumeInfo.description,
+          thumbnail: book.volumeInfo.imageLinks.thumbnail
+        };
+        this.setState(Object.assign(state, { bookInfo: bookInfo }));
+      }.bind(this));
+    } else {
+      this.setState(state);
+    }
   }
 
   f() {
@@ -59,20 +74,20 @@ class Main extends React.Component {
       },
       state: {
         inputStream: {
-          type: "LiveStream",
+          type: 'LiveStream',
           constraints: {
             width: 640,
             height: 480,
-            facing: "environment" // or user
+            facing: 'environment' // or user
           }
         },
         locator: {
-          patchSize: "medium",
+          patchSize: 'medium',
           halfSample: true
         },
         numOfWorkers: 4,
         decoder: {
-          readers: ["ean_reader"]
+          readers: ['ean_reader']
         },
         locate: true
       },
@@ -82,21 +97,21 @@ class Main extends React.Component {
     App.init();
 
     Quagga.onProcessed(function (result) {
-      var drawingCtx = Quagga.canvas.ctx.overlay,
-          drawingCanvas = Quagga.canvas.dom.overlay;
+      var drawingCtx = Quagga.canvas.ctx.overlay;
+      var drawingCanvas = Quagga.canvas.dom.overlay;
 
       if (result) {
         if (result.boxes) {
-          drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute("width")), parseInt(drawingCanvas.getAttribute("height")));
+          drawingCtx.clearRect(0, 0, parseInt(drawingCanvas.getAttribute('width')), parseInt(drawingCanvas.getAttribute('height')));
           result.boxes.filter(function (box) {
             return box !== result.box;
           }).forEach(function (box) {
-            Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: "green", lineWidth: 2 });
+            Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, { color: 'green', lineWidth: 2 });
           });
         }
 
         if (result.box) {
-          Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: "#00F", lineWidth: 2 });
+          Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: '#00F', lineWidth: 2 });
         }
 
         if (result.codeResult && result.codeResult.code) {
@@ -110,12 +125,6 @@ class Main extends React.Component {
       if (App.lastResult !== code) {
         App.lastResult = code;
         that.nextStep({ code: code, barcode: false });
-        //     var $node = null, canvas = Quagga.canvas.dom.image;
-        //
-        //     $node = $('<li><div class="thumbnail"><div class="imgWrapper"><img /></div><div class="caption"><h4 class="code"></h4></div></div></li>');
-        //     $node.find("img").attr("src", canvas.toDataURL());
-        //     $node.find("h4.code").html(code);
-        //     $("#result_strip ul.thumbnails").prepend($node);
       }
     });
   }
@@ -210,9 +219,6 @@ class Main extends React.Component {
         );
       }
     } else if (this.state.step === steps.confirmation) {
-      $.getJSON('/getBookInfo/' + this.state.code + '/', function (data) {
-        console.log(data);
-      });
       content = React.createElement(
         'div',
         { className: 'center' },
@@ -220,7 +226,7 @@ class Main extends React.Component {
           'h5',
           null,
           'The book you scanned is: ',
-          this.state.code
+          this.state.bookInfo.title
         ),
         React.createElement('img', { src: 'http://covers.openlibrary.org/b/isbn/' + this.state.code + '-L.jpg' }),
         React.createElement(
@@ -345,8 +351,3 @@ class Main extends React.Component {
 }
 
 ReactDOM.render(React.createElement(Main, null), document.getElementById('example'));
-
-var a = [1, 2, 3, 4, 5];
-// a.forEach(b => console.log(b));
-
-console.log('bbbb');
