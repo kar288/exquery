@@ -350,7 +350,7 @@ class Main extends React.Component {
     return React.createElement(
       'div',
       null,
-      React.createElement(Header, null),
+      React.createElement(Header, { filters: this.state.step === steps.results }),
       content,
       this.state.overlay ? React.createElement(BookModal, {
         onClick: this.toggleModal.bind(this, null),

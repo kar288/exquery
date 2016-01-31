@@ -6,8 +6,8 @@ class Header extends React.Component {
     this.state = { openFilter: null };
   }
 
-  componentDidMount() {
-    $(".button-collapse").sideNav();
+  componentDidUpdate() {
+    $('.button-collapse').sideNav();
   }
 
   toggleSelectedFilter(filter) {
@@ -61,17 +61,11 @@ class Header extends React.Component {
         );
       }
     });
-    return React.createElement(
-      'nav',
-      { className: 'red', role: 'navigation' },
-      React.createElement(
+    var filters = null;
+    if (this.props.filters) {
+      filters = React.createElement(
         'div',
-        { className: 'nav-wrapper container' },
-        React.createElement(
-          'a',
-          { id: 'logo-container', href: '#', className: 'brand-logo' },
-          'ExQuery'
-        ),
+        null,
         React.createElement(
           'div',
           { id: 'slide-out', className: 'side-nav' },
@@ -83,7 +77,7 @@ class Header extends React.Component {
           filterDetails,
           React.createElement(
             'a',
-            { className: 'filter-add btn-floating btn-large waves-effect waves-light red' },
+            { className: 'filter-add btn-floating btn-large waves-effect red' },
             React.createElement(
               'i',
               { className: 'material-icons' },
@@ -93,9 +87,26 @@ class Header extends React.Component {
         ),
         React.createElement(
           'a',
-          { href: '#', 'data-activates': 'slide-out', className: 'button-collapse' },
+          {
+            href: '#',
+            'data-activates': 'slide-out',
+            className: 'button-collapse' },
           React.createElement('i', { className: 'mdi-navigation-menu' })
         )
+      );
+    }
+    return React.createElement(
+      'nav',
+      { className: 'red', role: 'navigation' },
+      React.createElement(
+        'div',
+        { className: 'nav-wrapper container' },
+        React.createElement(
+          'a',
+          { id: 'logo-container', href: '#', className: 'brand-logo' },
+          'ExQuery'
+        ),
+        filters
       )
     );
   }

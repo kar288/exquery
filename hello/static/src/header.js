@@ -6,8 +6,8 @@ class Header extends React.Component {
     this.state = {openFilter: null};
   }
 
-  componentDidMount() {
-    $(".button-collapse").sideNav();
+  componentDidUpdate() {
+    $('.button-collapse').sideNav();
   }
 
   toggleSelectedFilter(filter) {
@@ -32,48 +32,60 @@ class Header extends React.Component {
         filterElements.push(
           <li key={'filter-' + i}>
             <a
-              className="filter-element"
-              href="#!"
+              className='filter-element'
+              href='#!'
               onClick={this.toggleSelectedFilter.bind(this, filter)}>
               {filter}
             </a>
-            <i className="filter-nav-icon material-icons">clear</i>
+            <i className='filter-nav-icon material-icons'>clear</i>
           </li>
         );
       } else if (this.state.openFilter === filter) {
         filterDetails = (
-          <div className="row filter-detail">
-            <div className="col-xs-2">
+          <div className='row filter-detail'>
+            <div className='col-xs-2'>
               <i
                 onClick={this.toggleSelectedFilter.bind(this, null)}
-                className="filter-nav-icon material-icons">
+                className='filter-nav-icon material-icons'>
                 ic_arrow_back
               </i>
             </div>
-            <div className="col-xs-10">
+            <div className='col-xs-10'>
               {filter}
             </div>
           </div>
         );
       }
     });
-    return (
-      <nav className="red" role="navigation">
-        <div className="nav-wrapper container">
-          <a id="logo-container" href="#" className="brand-logo">
-            ExQuery
-          </a>
-          <div id="slide-out" className="side-nav">
+    var filters = null;
+    if (this.props.filters) {
+      filters = (
+        <div>
+          <div id='slide-out' className='side-nav'>
             <ul>
               {filterElements}
             </ul>
             {filterDetails}
-            <a className="filter-add btn-floating btn-large waves-effect waves-light red">
-             <i className="material-icons">add</i>
+            <a className='filter-add btn-floating btn-large waves-effect red'>
+             <i className='material-icons'>add</i>
             </a>
           </div>
-          <a href="#" data-activates="slide-out" className="button-collapse"><i className="mdi-navigation-menu"></i></a>
-
+          <a
+            href='#'
+            data-activates='slide-out'
+            className='button-collapse'>
+            <i className='mdi-navigation-menu' />
+          </a>
+        </div>
+      );
+    }
+    return (
+      <nav className='red' role='navigation'>
+        <div className='nav-wrapper container'>
+          <a id='logo-container' href='#' className='brand-logo'>
+            ExQuery
+          </a>
+          {filters}
         </div>
       </nav>
     );

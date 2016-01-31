@@ -307,7 +307,7 @@ class Main extends React.Component {
     }
     return (
       <div>
-        <Header/>
+        <Header filters={this.state.step === steps.results} />
         {content}
         {this.state.overlay ?
           <BookModal
