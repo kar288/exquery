@@ -4,7 +4,7 @@ import os
 from .models import Greeting
 import json
 import sys
-# from isbntools.app import *
+from django.http import JsonResponse
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -30,6 +30,7 @@ def db(request):
     return render(request, 'db.html', {'greetings': greetings})
 
 def getBookInfo(request, isbn):
-    meta_dict = '';
-    # meta_dict = meta(isbn, service='goob')
-    return HttpResponse(json.dumps(meta_dict), content_type="application/json")
+    return JsonResponse({'foo':'bar'})
+
+def getBookRecommendations(request, isbn):
+    return JsonResponse({'recommendations': ['9780312422288', '9781429902526', '9780312315948']})
