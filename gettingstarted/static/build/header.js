@@ -7,7 +7,9 @@ class Header extends React.Component {
   }
 
   componentDidUpdate() {
-    $('.button-collapse').sideNav();
+    if (this.props.filters) {
+      $('.button-collapse').sideNav();
+    }
   }
 
   toggleSelectedFilter(filter) {
