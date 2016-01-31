@@ -43,8 +43,10 @@ class Main extends React.Component {
   }
 
   nextStep(state, e) {
-    var state = Object.assign(state, {step: this.state.step + 1});
-    state.preventDefault();
+    if (state.preventDefault) {
+      state.preventDefault();
+    }
+    var newState = Object.assign(state, {step: this.state.step + 1});
     if (this.state.step + 1 === steps.confirmation) {
       var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
       $.getJSON(googleBookAPI + this.state.code, function(data) {
@@ -56,11 +58,11 @@ class Main extends React.Component {
           thumbnail: book.volumeInfo.imageLinks.thumbnail
         };
         this.setState(
-          Object.assign(state, {bookInfo: bookInfo})
+          Object.assign(newState, {bookInfo: bookInfo})
         );
       }.bind(this));
     } else {
-      this.setState(state);
+      this.setState(newState);
     }
   }
 
