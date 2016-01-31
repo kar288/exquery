@@ -49,7 +49,7 @@ class Main extends React.Component {
     var newState = Object.assign(state, {step: this.state.step + 1});
     if (this.state.step + 1 === steps.confirmation) {
       var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
-      $.getJSON(googleBookAPI + this.state.code, function(data) {
+      $.getJSON(googleBookAPI + newState.code, function(data) {
         var book = data.items[0];
         var bookInfo = {
           authors: book.volumeInfo.authors,
