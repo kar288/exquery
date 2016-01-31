@@ -35,8 +35,7 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      step: steps.inputType,
-      code: '9780312426811'
+      step: steps.inputType
     };
   }
 
@@ -47,7 +46,11 @@ class Main extends React.Component {
     var newState = Object.assign(state, { step: this.state.step + 1 });
     if (this.state.step + 1 === steps.confirmation) {
       var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
-      $.getJSON(googleBookAPI + newState.code, function (data) {
+      var code = this.state.code ? this.state.code : newState.code;
+      $.getJSON(googleBookAPI + code, function (data) {
+        if (data.totalItems === 0) {
+          return this.setState(newState);
+        }
         var book = data.items[0];
         var bookInfo = {
           authors: book.volumeInfo.authors,
