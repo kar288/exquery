@@ -9,6 +9,11 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.conf.urls.static import static
 
+import requests
+from bs4 import BeautifulSoup
+import cgi
+import re
+
 # Create your views here.
 def index(request):
     # return HttpResponse('Hello from Python!')
@@ -32,20 +37,35 @@ def db(request):
 def getBookInfo(request, isbn):
     return JsonResponse({'foo':'bar'})
 
-def getBookRecommendations(request, isbn):
-    return JsonResponse({'recommendations': ['9780312422288', '9781429902526', '9780312315948']})
+def getBookRecommendations(request, work):
 
-def getResults(request, isbns):
-    isbns = isbns.split(',')
-    for isbn in isbns:
-        print(isbn)
-    return JsonResponse({'results': [
-        '9780312422288',
-        # '9781429902526',
-        # '9780312315948',
-        # '9788420405384',
-        # '9789681902902',
-        # '9781400032716',
-        '9781473205321',
-        '9783453601024'
-    ]})
+ import pdb
+ r = requests.get("http://www.librarything.com/title/"+work)
+ soup = BeautifulSoup(r.text)
+ recommendations = soup.find("ol", {"class": "memberrecommendations"}).find_all("a", href = re.compile("^(/work/)|^(/author/)"))
+ works = []
+ for x in recommendations[:6:2]:
+	works.append((x.text, ""))
+ index = 0
+ for x in recommendations[1:6:2]:
+	works[index] = (works[index][0], x.text)
+	index += 1
+  
+    return JsonResponse({'recommendations': works })
+
+def getResults(request, works):
+    import pdb
+    
+    works = works.split(',')
+    for work in works:
+      r = requests.get("http://www.librarything.com/title/"+work )
+      soup = BeautifulSoup(r.text)
+      recommendations = soup.find("ol", {"class": "memberrecommendations"}).find_all("a", href = re.compile("^(/work/)|^(/author/)"))
+      works = []
+      for x in recommendations[::2]:
+	works.append((x.text, ""))
+	index = 0
+      for x in recommendations[1::2]:
+	works[index] = (works[index][0], x.text)
+	index += 1
+    return JsonResponse({'results': works})
