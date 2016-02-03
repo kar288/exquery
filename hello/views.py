@@ -37,14 +37,22 @@ def db(request):
 def getBookInfo(request, isbn):
     return JsonResponse({'foo':'bar'})
 
+def getBookRecommendations(request, isbn):
+    return JsonResponse({'recommendations': [
+          '9780312422288',
+          '9781429902526',
+          '9780312315948']
+    })
+
 def getBookRecommendationsWithTitle(request, title):
 
   import pdb
-  
+
   work = title
   works = []
   if not work == "":
     r = requests.get("http://www.librarything.com/title/"+work)
+    print(r.text)
     soup = BeautifulSoup(r.text)
     check = soup.find("ol", {"class": "memberrecommendations"})
     if check is not None:
@@ -58,7 +66,7 @@ def getBookRecommendationsWithTitle(request, title):
   else:
     print("Empty title!")
     print None
-    
+
   PublicationDate = []
   Authors = []
   Category = []
@@ -75,40 +83,40 @@ def getBookRecommendationsWithTitle(request, title):
       counter = 0;
       for item in check:
 	if item != None and counter < 1:
-	  PublicationDate.append(item.text) 
+	  PublicationDate.append(item.text)
 	  counter += 1
-	
+
     check = soup2.find("arr",{"name":"Author"})
     if check != None:
       counter = 0;
       for item in check:
 	if item != None and counter < 1:
-	  Authors.append(item.text) 
+	  Authors.append(item.text)
 	  counter += 1
-	  
+
     check = soup2.find("arr",{"name":"SubjectHeading"})
     if check != None:
       counter = 0;
       for item in check:
 	if item != None and counter < 1:
-	  Category.append(item.text) 
+	  Category.append(item.text)
 	  counter += 1
-	  
+
     check = soup2.find("arr",{"name":"MaterialType"})
     if check != None:
       counter = 0;
       for item in check:
 	if item != None and counter < 1:
-	  MediaType.append(item.text) 
+	  MediaType.append(item.text)
 	  counter += 1
-      
+
     check = soup2.find("arr",{"name":"text_auto"})
     if check != None:
       it = check.find_all("str")
       for item in it:
 	if item != None:
-	  Keywords.append(item.text) 
-      
+	  Keywords.append(item.text)
+
 
 
   return JsonResponse({'recommendations': works, 'PublicationDate': PublicationDate, 'Authors': Authors, 'Category': Category, 'MediaType': MediaType, 'Keywords': Keywords})
@@ -118,7 +126,7 @@ def getBookRecommendationsWithISBN(request, isbn):
 
   import pdb
   print("You reqeusted" + str(isbn))
-  
+
   work = str(isbn)
   works = []
   if not work == "":
@@ -135,8 +143,8 @@ def getBookRecommendationsWithISBN(request, isbn):
 	index += 1
   else:
     print("Empty title!")
-    
-  katalog_query_url = "http://katalog.stbib-koeln.de:8983/solr/select/?q="   
+
+  katalog_query_url = "http://katalog.stbib-koeln.de:8983/solr/select/?q="
   PublicationDate = []
   Authors = []
   Category = []
@@ -153,45 +161,88 @@ def getBookRecommendationsWithISBN(request, isbn):
       counter = 0;
       for item in check:
 	if item != None and counter < 1:
-	  PublicationDate.append(item.text) 
+	  PublicationDate.append(item.text)
 	  counter += 1
-	
+
     check = soup2.find("arr",{"name":"Author"})
     if check != None:
       counter = 0;
       for item in check:
 	if item != None and counter < 1:
-	  Authors.append(item.text) 
+	  Authors.append(item.text)
 	  counter += 1
-	  
+
     check = soup2.find("arr",{"name":"SubjectHeading"})
     if check != None:
       it = check.find_all("str")
       for item in it:
 	if item != None:
 	  Category.append(item.text)
-	  
+
     check = soup2.find("arr",{"name":"MaterialType"})
     if check != None:
       counter = 0;
       for item in check:
 	if item != None and counter < 1:
-	  MediaType.append(item.text) 
+	  MediaType.append(item.text)
 	  counter += 1
-      
+
     check = soup2.find("arr",{"name":"text_auto"})
     if check != None:
       it = check.find_all("str")
       for item in it:
 	if item != None:
-	  Keywords.append(item.text) 
-      
+	  Keywords.append(item.text)
+
   return JsonResponse({'recommendations': works, 'PublicationDate': PublicationDate, 'Authors': Authors, 'Category': Category, 'MediaType': MediaType, 'Keywords': Keywords})
 
+def getResults2(request):
+    els = [{
+        'Title': 'title5',
+        'ISBN': '21421',
+        'Author': 'some author',
+        'Category': 'category3',
+        'Year': 4,
+        # 'Media Type': 'book',
+        'Description': 'blajdklfjadkljffda',
+        'Keywords': ['key1', 'words', 'here'],
+        'Thumbnail': 'http://books.google.de/books/content?id=6uLtnQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api',
+    }, {
+        'Title': 'title',
+        'ISBN': '214213',
+        'Author': 'some author2',
+        'Year': 3,
+        'Category': 'category1',
+        # 'Media Type': 'book',
+        'Description': 'blajdklfjadkljffda',
+        'Keywords': ['key1', 'words', 'here1'],
+        'Thumbnail': 'http://books.google.de/books/content?id=6uLtnQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api',
+    }, {
+        'Title': 'title2',
+        'ISBN': '214212',
+        'Author': 'some autho3r',
+        'Category': 'category2',
+        'Year': 2,
+        # 'Media Type': 'book',
+        'Description': 'blajdklfjadkljffda',
+        'Keywords': ['key2', 'words2', 'here'],
+        'Thumbnail': 'http://books.google.de/books/content?id=6uLtnQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api',
+    }, {
+        'Title': 'title1',
+        'ISBN': '214213',
+        'Author': 'some au2thor',
+        'Keywords': ['key1', 'words1', 'here1'],
+        'Category': 'category1',
+        'Year': 1,
+        # 'Media Type': 'book',
+        'Description': 'blajdklfjadkljffda',
+        'Thumbnail': 'http://books.google.de/books/content?id=6uLtnQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api',
+    }]
+    return JsonResponse({'results': els})
 
 def getResults(request, PublicationDate, Authors, Category, MediaType, Keywords):
    #import pdb
-    
+
     #works = works.split(',')
     #for work in works:
      # r = requests.get("http://www.librarything.com/title/"+work )
@@ -204,7 +255,7 @@ def getResults(request, PublicationDate, Authors, Category, MediaType, Keywords)
       #for x in recommendations[1::2]:
 	#works[index] = (works[index][0], x.text)
 	#index += 1
-    
+
     alls = ""
     keywords = ""
 
@@ -222,7 +273,7 @@ def getResults(request, PublicationDate, Authors, Category, MediaType, Keywords)
     if Category != None:
       for item in Category:
 	alls += "SubjectHeading:"+item+"+"
-    alls = alls[:-1] 
+    alls = alls[:-1]
 
     if MediaType != None:
       for item in MediaType:
@@ -243,5 +294,5 @@ def getResults(request, PublicationDate, Authors, Category, MediaType, Keywords)
       for item in check:
 	ISBNs.append(item.text)
 
-    
+
     return JsonResponse({'results': ISBNs})

@@ -19,6 +19,9 @@
 
   <script src="/static/quagga.js"></script>
   <style type="text/css">
+    .hidden {
+      display: none;
+    }
     .side-nav {
       color: #444;
     }
@@ -82,11 +85,11 @@
       text-overflow: ellipsis;
     }
     .filter-add {
-      position: absolute;
-      right: 20px;
-      padding: 0 2px !important;
-      bottom: 80px;
+      bottom: 20px;
       cursor: pointer !important;
+      left: 160px;
+      padding: 0 2px !important;
+      position: fixed;
     }
     .filter-add:hover {
       text-decoration: none;

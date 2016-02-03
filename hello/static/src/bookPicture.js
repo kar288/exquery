@@ -10,8 +10,8 @@ class BookPicture extends React.Component {
     var horizontalClass = this.props.horizontal ? 'horizontal' : '';
     var content = (
       <div
-        className={'book-picture ' + horizontalClass}
-        style={{backgroundImage: 'url(' + this.props.book.thumbnail + ')'}}
+        className={'book-picture z-depth-1 ' + horizontalClass}
+        style={{backgroundImage: 'url(' + this.props.book.Thumbnail + ')'}}
         onClick={this.props.onClick}
       />
     );

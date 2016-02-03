@@ -26,6 +26,7 @@ class Main extends React.Component {
   nextStep(state, e) {
     if (state.preventDefault) {
       state.preventDefault();
+      state = this.state;
     }
     var newState = Object.assign(state, {step: this.state.step + 1});
     if (newState.step === steps.confirmation) {
@@ -68,25 +69,29 @@ class Main extends React.Component {
         url += Array.from(this.state.onBooks).join(',') + ',';
       }
       url += this.state.code;
+      var metadata = this.state.metadata || new Map();
+      var results = [];
       $.getJSON(url, function(data) {
-        var resultIsbns = data.results;
-        var results = [];
-        resultIsbns.forEach(code => {
-          $.getJSON(this.googleApiUrl(code), function(data) {
-            if (data.totalItems === 0) {
-              results.push({});
+        results = data.results;
+        results.forEach(result => {
+          var keys = Object.keys(result);
+          keys.forEach(key => {
+            var vals = metadata.get(key);
+            var els = result[key];
+            if (Array.isArray(els)) {
+              vals = vals || new Set();
+              els.forEach(el => vals.add(el));
             } else {
-              var bookInfo = this.getBookInfo(data.items[0], code);
-              results.push(bookInfo);
+              vals = vals || [];
+              vals.push(result[key]);
             }
-            if (results.length === resultIsbns.length) {
-              this.sortResults(results, this.state.sorting);
-              this.setState(
-                Object.assign(newState, {results: results})
-              );
-            }
-          }.bind(this));
+            metadata.set(key, vals);
+          });
         });
+        console.log(metadata);
+        this.setState(
+          Object.assign(newState, {results: results, metadata: metadata})
+        );
       }.bind(this));
     } else {
       this.setState(newState);
@@ -109,7 +114,7 @@ class Main extends React.Component {
       author: book.volumeInfo.authors[0],
       title: book.volumeInfo.title,
       description: book.volumeInfo.description,
-      thumbnail: thumbnail,
+      Thumbnail: thumbnail,
     };
   }
 
@@ -301,7 +306,7 @@ class Main extends React.Component {
           <h5>
             The book you scanned is: {this.state.bookInfo.title}
           </h5>
-          <img className='big-book-cover' src={this.state.bookInfo.thumbnail}/>
+          <img className='big-book-cover' src={this.state.bookInfo.Thumbnail}/>
           <a
             href='#'
             onClick={this.nextStep.bind(this)}
@@ -387,7 +392,7 @@ class Main extends React.Component {
     }
     return (
       <div>
-        <Header filters={this.state.step === steps.results} />
+        <Header filters={this.state.metadata} />
         {content}
         {this.state.overlay ?
           <BookModal

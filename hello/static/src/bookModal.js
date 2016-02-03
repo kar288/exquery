@@ -18,7 +18,7 @@ class BookModal extends React.Component {
         <div className='book-modal-content'>
           <div
             className='book-modal-image'
-            style={{backgroundImage: 'url(' + this.props.book.thumbnail + ')'}}
+            style={{backgroundImage: 'url(' + this.props.book.Thumbnail + ')'}}
           />
           <div className='book-modal-info'>
             <h1>
