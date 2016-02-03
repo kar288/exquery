@@ -14,6 +14,9 @@ urlpatterns = [
     url(r'^db', hello.views.db, name='db'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^getBookInfo/(?P<isbn>\d+)/$', hello.views.getBookInfo, name='getBookInfo'),
-    url(r'^getBookRecommendations/(?P<isbn>\d+)$', hello.views.getBookRecommendations, name='getBookRecommendations'),
-    url(r'^getResults/(?P<isbns>[\d,]+)$', hello.views.getResults, name='getResults'),
+    url(r'^getBookRecommendationsWithTitle/(?P<title>[\w ]+)/$', hello.views.getBookRecommendationsWithTitle, name='getBookRecommendationsWithTitle'),
+    url(r'^getBookRecommendationsWithISBN/(?P<isbn>\d+)/$', hello.views.getBookRecommendationsWithISBN, name='getBookRecommendationsWithISBN'),
+    url(r'^getResults/(?P<PublicationDate>\d+),(?P<Authors>[\w ]+),(?P<Category>[\w ]+),(?P<MediaType>[\w ]+),(?P<Keywords>[\w ]+)/$', hello.views.getResults, name='getResults')
 ]
+# (?P<title>\w+)/$
+# url(r'^getBookRecommendationsWithISBN/(?P<isbn>\d+)/$', hello.views.getBookRecommendationsWithISBN, name='getBookRecommendationsWithISBN')
