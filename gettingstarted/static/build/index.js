@@ -9,8 +9,10 @@ const steps = {
 };
 
 const sortOptions = {
-  'author': 0,
-  'title': 1
+  'Author': 0,
+  'Title': 1,
+  'Category': 2,
+  'Year': 3
 };
 
 class Main extends React.Component {
@@ -19,7 +21,7 @@ class Main extends React.Component {
     this.state = {
       step: steps.inputType,
       // code: '9785170811373',
-      sorting: 'author'
+      sorting: 'Author'
     };
   }
 
@@ -80,8 +82,12 @@ class Main extends React.Component {
             metadata.set(key, vals);
           });
         });
-        console.log(metadata);
-        this.setState(Object.assign(newState, { results: results, metadata: metadata }));
+        var newMetadata = new Map();
+        metadata.forEach((val, key) => {
+          newMetadata.set(key, { vals: val, on: true });
+        });
+        console.log(newMetadata);
+        this.setState(Object.assign(newState, { results: results, metadata: newMetadata }));
       }.bind(this));
     } else {
       this.setState(newState);

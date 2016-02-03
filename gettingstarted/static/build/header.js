@@ -3,18 +3,25 @@
 class Header extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      doneFilters: false
+    };
   }
 
   componentDidUpdate() {
-    if (this.props.filters) {
+    if (this.props.filters && !this.state.doneFilters) {
       $('.button-collapse').sideNav();
+      this.setState({ doneFilters: true });
     }
   }
 
   render() {
     var buttonClasses = 'button-collapse';
+    var filters = null;
     if (!this.props.filters) {
       buttonClasses += ' hidden';
+    } else {
+      filters = React.createElement(Filters, this.props);
     }
     return React.createElement(
       'nav',
@@ -30,7 +37,7 @@ class Header extends React.Component {
         React.createElement(
           'div',
           { id: 'slide-out', className: 'side-nav' },
-          React.createElement(Filters, this.props)
+          filters
         ),
         React.createElement(
           'a',

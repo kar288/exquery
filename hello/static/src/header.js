@@ -3,18 +3,25 @@
 class Header extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      doneFilters: false,
+    };
   }
 
   componentDidUpdate() {
-    if (this.props.filters) {
+    if (this.props.filters && !this.state.doneFilters) {
       $('.button-collapse').sideNav();
+      this.setState({doneFilters: true});
     }
   }
 
   render() {
     var buttonClasses = 'button-collapse';
+    var filters = null;
     if (!this.props.filters) {
       buttonClasses += ' hidden';
+    } else {
+      filters = <Filters {...this.props} />;
     }
     return (
       <nav className='red' role='navigation'>
@@ -23,7 +30,7 @@ class Header extends React.Component {
             ExQuery
           </a>
           <div id='slide-out' className='side-nav'>
-            <Filters {...this.props} />
+            {filters}
           </div>
           <a
             href='#'

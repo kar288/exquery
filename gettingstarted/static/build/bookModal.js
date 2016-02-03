@@ -29,17 +29,17 @@ class BookModal extends React.Component {
           React.createElement(
             'h1',
             null,
-            this.props.book.title
+            this.props.book.Title
           ),
           React.createElement(
             'h5',
             null,
-            this.props.book.author
+            this.props.book.Author
           ),
           React.createElement(
             'div',
             { className: 'book-modal-description' },
-            this.props.book.description
+            this.props.book.Description
           )
         )
       )

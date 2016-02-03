@@ -22,13 +22,13 @@ class BookModal extends React.Component {
           />
           <div className='book-modal-info'>
             <h1>
-              {this.props.book.title}
+              {this.props.book.Title}
             </h1>
             <h5>
-              {this.props.book.author}
+              {this.props.book.Author}
             </h5>
             <div className='book-modal-description'>
-              {this.props.book.description}
+              {this.props.book.Description}
             </div>
           </div>
         </div>
