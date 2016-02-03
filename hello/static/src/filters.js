@@ -31,6 +31,14 @@ class Filters extends React.Component {
           </li>
         );
       } else if (this.state.openFilter === field) {
+        var filterVals = [];
+        values.forEach((val, i) => {
+          filterVals.push(
+            <div key={'val-' + i} >
+              {val}
+            </div>
+          );
+        });
         filterDetails = (
           <div>
             <div className='row filter-detail'>
@@ -46,13 +54,7 @@ class Filters extends React.Component {
               </div>
             </div>
             <div>
-              {values.map((val, i) => {
-                return (
-                  <div key={'val-' + i} >
-                    {val}
-                  </div>
-                );
-              })}
+              {filterVals}
             </div>
           </div>
         );

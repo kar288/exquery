@@ -37,6 +37,14 @@ class Filters extends React.Component {
           )
         ));
       } else if (this.state.openFilter === field) {
+        var filterVals = [];
+        values.forEach((val, i) => {
+          filterVals.push(React.createElement(
+            'div',
+            { key: 'val-' + i },
+            val
+          ));
+        });
         filterDetails = React.createElement(
           'div',
           null,
@@ -63,13 +71,7 @@ class Filters extends React.Component {
           React.createElement(
             'div',
             null,
-            values.map((val, i) => {
-              return React.createElement(
-                'div',
-                { key: 'val-' + i },
-                val
-              );
-            })
+            filterVals
           )
         );
       }

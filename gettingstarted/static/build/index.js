@@ -70,14 +70,12 @@ class Main extends React.Component {
         results.forEach(result => {
           var keys = Object.keys(result);
           keys.forEach(key => {
-            var vals = metadata.get(key);
+            var vals = metadata.get(key) || new Set();
             var els = result[key];
             if (Array.isArray(els)) {
-              vals = vals || new Set();
               els.forEach(el => vals.add(el));
             } else {
-              vals = vals || [];
-              vals.push(result[key]);
+              vals.add(result[key]);
             }
             metadata.set(key, vals);
           });
