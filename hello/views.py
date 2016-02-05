@@ -48,153 +48,287 @@ def getBookRecommendationsWithTitle(request, title):
 
   import pdb
 
-  work = title
+  #step1: title should have the format: title_item + author_item
+
+  #step2: use librarything to get recommendations isbns list
+
   works = []
-  if not work == "":
-    r = requests.get("http://www.librarything.com/title/"+work)
-    print(r.text)
-    soup = BeautifulSoup(r.text)
-    check = soup.find("ol", {"class": "memberrecommendations"})
-    if check is not None:
-      recommendations = check.find_all("a", href = re.compile("^(/work/)|^(/author/)"))
-      for x in recommendations[:6:2]:
-	works.append((x.text, ""))
-	index = 0
-      for x in recommendations[1:6:2]:
-	works[index] = (works[index][0], x.text)
-	index += 1
-  else:
-    print("Empty title!")
-    print None
-
-  PublicationDate = []
-  Authors = []
-  Category = []
-  MediaType = []
-  Keywords = []
-
+  r3 = requests.get("http://www.librarything.com/title/"+title)
+  soup2 = BeautifulSoup(r3.text)
+  check2 = soup2.find("ol", {"class": "memberrecommendations"})
+  if check2 is not None:
+    recommendations = check2.find_all("a", href = re.compile("^(/work/)|^(/author/)"))
+    for x in recommendations[:6:2]:
+      works.append((x.text, ""))
+      index = 0
+    for x in recommendations[1:6:2]:
+      works[index] = (works[index][0], x.text)
+      index += 1
+      
+      
+  #step3: get isbns from solr
+  results = []
   for w in works:
-    work = ""
-    work = w[0].replace(" ", "+") + "+" + w[1].replace(" ", "+")
-    r = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+work+"&fq=MaterialType%3ABuch&start=0&rows=1&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
-    soup2 = BeautifulSoup(r.text)
-    check = soup2.find("arr",{"name":"DateOfPublication"})
-    if check != None:
-      counter = 0;
-      for item in check:
-	if item != None and counter < 1:
-	  PublicationDate.append(item.text)
-	  counter += 1
+    work = []
+    #work = (w[0]+"+"+w[1]).replace("[^0-9a-zA-Z]+"," ")
+    work = re.sub("[^0-9a-zA-Z]+"," ",w[0])+"+"+re.sub("[^0-9a-zA-Z]+"," ",w[1])
+    req = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+work+"&fq=MaterialType%3ABuch&start=0&rows=1&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
+    soupreq1 = BeautifulSoup(req.text)
+    checkreq1 = soupreq1.find("arr",{"name":"ISBN"})
+    nisbn = checkreq1.text.rsplit(' ',1)[0]
+    if " " in nisbn:
+      nisbn = nisbn.rsplit(' ',1)[0]
+    #print(nisbn)
+    
+  #step4: get othe data from solr (year, media type = BUC, keywords)
+    checkreq11 = soupreq1.find("arr",{"name":"DateOfPublication"})
+    #print(checkreq11)
+    checkreq12 =soupreq1.find("arr",{"name":"text_auto"})
+    nkeywords = []
+    it = checkreq12.find_all("str")
+    for i in it:
+      nkeywords.append(i.text)
+    #print(nkeywords)
+    
+  #step5: get other data from googleapis (author, title, categories, description, thumbnail)
+    req2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+nisbn)
+    content2 = req2.text
+    t2 = json.loads(content2)
 
-    check = soup2.find("arr",{"name":"Author"})
-    if check != None:
-      counter = 0;
-      for item in check:
-	if item != None and counter < 1:
-	  Authors.append(item.text)
-	  counter += 1
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "authors" in t2["items"][0]["volumeInfo"]:
+	  nauthor = t2["items"][0]["volumeInfo"]["authors"][0]
+	else:
+	  nauthor = " "
+      else:
+	nauthor = " "
+    else:
+      nauthor = " " 
+    
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "title" in t2["items"][0]["volumeInfo"]:
+	  ntitle = t2["items"][0]["volumeInfo"]["title"]
+	else:
+	  ntitle = " "
+      else:
+	ntitle = " "
+    else:
+      ntitle = " "
+      
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "categories" in t2["items"][0]["volumeInfo"]:
+	  ncategories = t2["items"][0]["volumeInfo"]["categories"][0]
+	else:
+	  ncategories = " "
+      else:
+	ncategories = " "
+    else:
+      ncategories = " "
+      
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "description" in t2["items"][0]["volumeInfo"]:
+	  ndescription = t2["items"][0]["volumeInfo"]["description"]
+	else:
+	  ndescription = " "
+      else:
+	ndescription = " "
+    else:
+      ndescription = " "
+    
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "imageLinks" in t2["items"][0]["volumeInfo"]:
+	  if "thumbnail" in t2["items"][0]["volumeInfo"]["imageLinks"]:
+	    nthumbnail = t2["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+	  else:
+	    nthumbnail = " "
+	else:
+	  nthumbnail = " "
+      else:
+	nthumbnail = " "
+    else:
+      nthumbnail = " "
 
-    check = soup2.find("arr",{"name":"SubjectHeading"})
-    if check != None:
-      counter = 0;
-      for item in check:
-	if item != None and counter < 1:
-	  Category.append(item.text)
-	  counter += 1
+  #step6: make json file with data
+    data = {}
+    data['Title'] = ntitle;
+    data['ISBN'] = nisbn;
+    data['Author'] = nauthor;
+    data['Category'] = ncategories;
+    data['Year'] = checkreq11.text;
+    data['Media Type'] = 'book';
+    data['Description'] = ndescription;
+    data['Keywords'] = nkeywords;
+    data['Thumbnail'] = nthumbnail;
+    json_data = json.dumps(data)
+    results.append(json_data)
 
-    check = soup2.find("arr",{"name":"MaterialType"})
-    if check != None:
-      counter = 0;
-      for item in check:
-	if item != None and counter < 1:
-	  MediaType.append(item.text)
-	  counter += 1
-
-    check = soup2.find("arr",{"name":"text_auto"})
-    if check != None:
-      it = check.find_all("str")
-      for item in it:
-	if item != None:
-	  Keywords.append(item.text)
-
-
-
-  return JsonResponse({'recommendations': works, 'PublicationDate': PublicationDate, 'Authors': Authors, 'Category': Category, 'MediaType': MediaType, 'Keywords': Keywords})
+  return JsonResponse({'results': results})
 
 
 def getBookRecommendationsWithISBN(request, isbn):
 
   import pdb
-  print("You reqeusted" + str(isbn))
+  #step1: from isbn to title+author
 
-  work = str(isbn)
-  works = []
-  if not work == "":
-    r = requests.get("http://www.librarything.com/isbn/"+work)
-    soup = BeautifulSoup(r.text)
-    check = soup.find("ol", {"class": "memberrecommendations"})
-    if check is not None:
-      recommendations = check.find_all("a", href = re.compile("^(/work/)|^(/author/)"))
-      for x in recommendations[:6:2]:
-	works.append((x.text, ""))
-	index = 0
-      for x in recommendations[1:6:2]:
-	works[index] = (works[index][0], x.text)
-	index += 1
+  # r = urllib.urlopen("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn)
+  r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn)
+  content = r.text
+  t = json.loads(content)
+  if "items" in t:
+    if "volumeInfo" in t["items"][0]:
+      if "authors" in t["items"][0]["volumeInfo"]:
+	author = t["items"][0]["volumeInfo"]["authors"][0]
+      else:
+	author = " "
+    else:
+      author = " "
   else:
-    print("Empty title!")
+    author = " " 
+    
+  if "items" in t:
+    if "volumeInfo" in t["items"][0]:
+      if "title" in t["items"][0]["volumeInfo"]:
+	title = t["items"][0]["volumeInfo"]["title"]
+      else:
+	title = " "
+    else:
+      title = " "
+  else:
+    title = " "
 
-  katalog_query_url = "http://katalog.stbib-koeln.de:8983/solr/select/?q="
-  PublicationDate = []
-  Authors = []
-  Category = []
-  MediaType = []
-  Keywords = []
+  searchfield = title+"+"+author
 
+  #step2: use searchfield with librarything and get new work link
+  #r2 = requests.get("http://www.librarything.com/title/"+searchfield)
+  #soup = BeautifulSoup(r2.text)
+
+  #check = soup.find("link", {"rel": "canonical"})
+  #if check is not None:
+  # link = check['href']
+
+  #step3: use librarything to get recommendations isbns list
+
+  works = []
+  r3 = requests.get("http://www.librarything.com/title/"+searchfield)
+  soup2 = BeautifulSoup(r3.text)
+  check2 = soup2.find("ol", {"class": "memberrecommendations"})
+  if check2 is not None:
+    recommendations = check2.find_all("a", href = re.compile("^(/work/)|^(/author/)"))
+    for x in recommendations[:6:2]:
+      works.append((x.text, ""))
+      index = 0
+    for x in recommendations[1:6:2]:
+      works[index] = (works[index][0], x.text)
+      index += 1
+      
+      
+  #step4: get isbns from solr
+  results = []
   for w in works:
-    work = ""
-    work = w[0].replace(" ", "+") + "+" + w[1].replace(" ", "+")
-    r = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+work+"&fq=MaterialType%3ABuch&start=0&rows=1&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
-    soup2 = BeautifulSoup(r.text)
-    check = soup2.find("arr",{"name":"DateOfPublication"})
-    if check != None:
-      counter = 0;
-      for item in check:
-	if item != None and counter < 1:
-	  PublicationDate.append(item.text)
-	  counter += 1
+    work = []
+    #work = (w[0]+"+"+w[1]).replace("[^0-9a-zA-Z]+"," ")
+    work = re.sub("[^0-9a-zA-Z]+"," ",w[0])+"+"+re.sub("[^0-9a-zA-Z]+"," ",w[1])
+    req = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+work+"&fq=MaterialType%3ABuch&start=0&rows=1&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
+    soupreq1 = BeautifulSoup(req.text)
+    checkreq1 = soupreq1.find("arr",{"name":"ISBN"})
+    nisbn = checkreq1.text.rsplit(' ',1)[0]
+    if " " in nisbn:
+      nisbn = nisbn.rsplit(' ',1)[0]
+    #print(nisbn)
+    
+  #step5: get othe data from solr (year, media type = BUC, keywords)
+    checkreq11 = soupreq1.find("arr",{"name":"DateOfPublication"})
+    #print(checkreq11)
+    checkreq12 =soupreq1.find("arr",{"name":"text_auto"})
+    nkeywords = []
+    it = checkreq12.find_all("str")
+    for i in it:
+      nkeywords.append(i.text)
+    #print(nkeywords)
+    
+  #step6: get other data from googleapis (author, title, categories, description, thumbnail)
+    req2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+nisbn)
+    content2 = req2.text
+    t2 = json.loads(content2)
 
-    check = soup2.find("arr",{"name":"Author"})
-    if check != None:
-      counter = 0;
-      for item in check:
-	if item != None and counter < 1:
-	  Authors.append(item.text)
-	  counter += 1
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "authors" in t2["items"][0]["volumeInfo"]:
+	  nauthor = t2["items"][0]["volumeInfo"]["authors"][0]
+	else:
+	  nauthor = " "
+      else:
+	nauthor = " "
+    else:
+      nauthor = " " 
+    
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "title" in t2["items"][0]["volumeInfo"]:
+	  ntitle = t2["items"][0]["volumeInfo"]["title"]
+	else:
+	  ntitle = " "
+      else:
+	ntitle = " "
+    else:
+      ntitle = " "
+      
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "categories" in t2["items"][0]["volumeInfo"]:
+	  ncategories = t2["items"][0]["volumeInfo"]["categories"][0]
+	else:
+	  ncategories = " "
+      else:
+	ncategories = " "
+    else:
+      ncategories = " "
+      
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "description" in t2["items"][0]["volumeInfo"]:
+	  ndescription = t2["items"][0]["volumeInfo"]["description"]
+	else:
+	  ndescription = " "
+      else:
+	ndescription = " "
+    else:
+      ndescription = " "
+    
+    if "items" in t2:
+      if "volumeInfo" in t2["items"][0]:
+	if "imageLinks" in t2["items"][0]["volumeInfo"]:
+	  if "thumbnail" in t["items"][0]["volumeInfo"]["imageLinks"]:
+	    nthumbnail = t["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+	  else:
+	    nthumbnail = " "
+	else:
+	  nthumbnail = " "
+      else:
+	nthumbnail = " "
+    else:
+      nthumbnail = " "
 
-    check = soup2.find("arr",{"name":"SubjectHeading"})
-    if check != None:
-      it = check.find_all("str")
-      for item in it:
-	if item != None:
-	  Category.append(item.text)
+#step7: make json file with data
+    data = {}
+    data['Title'] = ntitle;
+    data['ISBN'] = nisbn;
+    data['Author'] = nauthor;
+    data['Category'] = ncategories;
+    data['Year'] = checkreq11.text;
+    data['Media Type'] = 'book';
+    data['Description'] = ndescription;
+    data['Keywords'] = nkeywords;
+    data['Thumbnail'] = nthumbnail;
+    json_data = json.dumps(data)
+    results.append(json_data)
 
-    check = soup2.find("arr",{"name":"MaterialType"})
-    if check != None:
-      counter = 0;
-      for item in check:
-	if item != None and counter < 1:
-	  MediaType.append(item.text)
-	  counter += 1
-
-    check = soup2.find("arr",{"name":"text_auto"})
-    if check != None:
-      it = check.find_all("str")
-      for item in it:
-	if item != None:
-	  Keywords.append(item.text)
-
-  return JsonResponse({'recommendations': works, 'PublicationDate': PublicationDate, 'Authors': Authors, 'Category': Category, 'MediaType': MediaType, 'Keywords': Keywords})
+  return JsonResponse({'results': results})
 
 def getResults2(request):
     els = [{
@@ -240,7 +374,7 @@ def getResults2(request):
     }]
     return JsonResponse({'results': els})
 
-def getResults(request, PublicationDate, Authors, Category, MediaType, Keywords):
+def getResults(request, isbns):
    #import pdb
 
     #works = works.split(',')
@@ -295,4 +429,4 @@ def getResults(request, PublicationDate, Authors, Category, MediaType, Keywords)
 	ISBNs.append(item.text)
 
 
-    return JsonResponse({'results': ISBNs})
+    return JsonResponse({'results': list})
