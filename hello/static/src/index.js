@@ -46,24 +46,13 @@ class Main extends React.Component {
         );
       }.bind(this));
     } else if (newState.step === steps.recommendations) {
-      $.getJSON('/getBookRecommendations/' + this.state.code, function(data) {
-        var recommendationIsbns = data.recommendations;
-        var doneRecs = 0;
-        var recommendations = [];
-        recommendationIsbns.forEach(code => {
-          $.getJSON(this.googleApiUrl(code), function(data) {
-            if (data.totalItems === 0) {
-              return this.setState(newState);
-            }
-            var bookInfo = this.getBookInfo(data.items[0], code);
-            recommendations.push(bookInfo);
-            if (recommendations.length === recommendationIsbns.length) {
-              this.setState(
-                Object.assign(newState, {recommendations: recommendations})
-              );
-            }
-          }.bind(this));
-        });
+      var url = '/getBookRecommendationsWithISBN/' + this.state.code;
+      $.getJSON(url, function(data) {
+        var recommendations = data.results;
+        debugger;
+        this.setState(
+          Object.assign(newState, {recommendations: recommendations})
+        );
       }.bind(this));
     } else if (newState.step === steps.results) {
       var url = '/getResults/';
@@ -71,6 +60,7 @@ class Main extends React.Component {
         url += Array.from(this.state.onBooks).join(',') + ',';
       }
       url += this.state.code;
+      debugger;
       var metadata = this.state.metadata || new Map();
       var results = [];
       $.getJSON(url, function(data) {

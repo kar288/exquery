@@ -64,8 +64,8 @@ def getBookRecommendationsWithTitle(request, title):
     for x in recommendations[1:6:2]:
       works[index] = (works[index][0], x.text)
       index += 1
-      
-      
+
+
   #step3: get isbns from solr
   results = []
   for w in works:
@@ -79,7 +79,7 @@ def getBookRecommendationsWithTitle(request, title):
     if " " in nisbn:
       nisbn = nisbn.rsplit(' ',1)[0]
     #print(nisbn)
-    
+
   #step4: get othe data from solr (year, media type = BUC, keywords)
     checkreq11 = soupreq1.find("arr",{"name":"DateOfPublication"})
     #print(checkreq11)
@@ -89,7 +89,7 @@ def getBookRecommendationsWithTitle(request, title):
     for i in it:
       nkeywords.append(i.text)
     #print(nkeywords)
-    
+
   #step5: get other data from googleapis (author, title, categories, description, thumbnail)
     req2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+nisbn)
     content2 = req2.text
@@ -104,8 +104,8 @@ def getBookRecommendationsWithTitle(request, title):
       else:
 	nauthor = " "
     else:
-      nauthor = " " 
-    
+      nauthor = " "
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "title" in t2["items"][0]["volumeInfo"]:
@@ -116,7 +116,7 @@ def getBookRecommendationsWithTitle(request, title):
 	ntitle = " "
     else:
       ntitle = " "
-      
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "categories" in t2["items"][0]["volumeInfo"]:
@@ -127,7 +127,7 @@ def getBookRecommendationsWithTitle(request, title):
 	ncategories = " "
     else:
       ncategories = " "
-      
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "description" in t2["items"][0]["volumeInfo"]:
@@ -138,7 +138,7 @@ def getBookRecommendationsWithTitle(request, title):
 	ndescription = " "
     else:
       ndescription = " "
-    
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "imageLinks" in t2["items"][0]["volumeInfo"]:
@@ -164,8 +164,9 @@ def getBookRecommendationsWithTitle(request, title):
     data['Description'] = ndescription;
     data['Keywords'] = nkeywords;
     data['Thumbnail'] = nthumbnail;
-    json_data = json.dumps(data)
-    results.append(json_data)
+    # json_data = json.dumps(data)
+    print(data)
+    results.append(data)
 
   return JsonResponse({'results': results})
 
@@ -188,8 +189,8 @@ def getBookRecommendationsWithISBN(request, isbn):
     else:
       author = " "
   else:
-    author = " " 
-    
+    author = " "
+
   if "items" in t:
     if "volumeInfo" in t["items"][0]:
       if "title" in t["items"][0]["volumeInfo"]:
@@ -225,8 +226,8 @@ def getBookRecommendationsWithISBN(request, isbn):
     for x in recommendations[1:6:2]:
       works[index] = (works[index][0], x.text)
       index += 1
-      
-      
+
+
   #step4: get isbns from solr
   results = []
   for w in works:
@@ -240,7 +241,7 @@ def getBookRecommendationsWithISBN(request, isbn):
     if " " in nisbn:
       nisbn = nisbn.rsplit(' ',1)[0]
     #print(nisbn)
-    
+
   #step5: get othe data from solr (year, media type = BUC, keywords)
     checkreq11 = soupreq1.find("arr",{"name":"DateOfPublication"})
     #print(checkreq11)
@@ -250,7 +251,7 @@ def getBookRecommendationsWithISBN(request, isbn):
     for i in it:
       nkeywords.append(i.text)
     #print(nkeywords)
-    
+
   #step6: get other data from googleapis (author, title, categories, description, thumbnail)
     req2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+nisbn)
     content2 = req2.text
@@ -265,8 +266,8 @@ def getBookRecommendationsWithISBN(request, isbn):
       else:
 	nauthor = " "
     else:
-      nauthor = " " 
-    
+      nauthor = " "
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "title" in t2["items"][0]["volumeInfo"]:
@@ -277,7 +278,7 @@ def getBookRecommendationsWithISBN(request, isbn):
 	ntitle = " "
     else:
       ntitle = " "
-      
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "categories" in t2["items"][0]["volumeInfo"]:
@@ -288,7 +289,7 @@ def getBookRecommendationsWithISBN(request, isbn):
 	ncategories = " "
     else:
       ncategories = " "
-      
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "description" in t2["items"][0]["volumeInfo"]:
@@ -299,7 +300,7 @@ def getBookRecommendationsWithISBN(request, isbn):
 	ndescription = " "
     else:
       ndescription = " "
-    
+
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "imageLinks" in t2["items"][0]["volumeInfo"]:
@@ -325,8 +326,8 @@ def getBookRecommendationsWithISBN(request, isbn):
     data['Description'] = ndescription;
     data['Keywords'] = nkeywords;
     data['Thumbnail'] = nthumbnail;
-    json_data = json.dumps(data)
-    results.append(json_data)
+    # json_data = json.dumps(data)
+    results.append(data)
 
   return JsonResponse({'results': results})
 
