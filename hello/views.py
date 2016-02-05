@@ -304,8 +304,8 @@ def getBookRecommendationsWithISBN(request, isbn):
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
 	if "imageLinks" in t2["items"][0]["volumeInfo"]:
-	  if "thumbnail" in t["items"][0]["volumeInfo"]["imageLinks"]:
-	    nthumbnail = t["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
+	  if "thumbnail" in t2["items"][0]["volumeInfo"]["imageLinks"]:
+	    nthumbnail = t2["items"][0]["volumeInfo"]["imageLinks"]["thumbnail"]
 	  else:
 	    nthumbnail = " "
 	else:
