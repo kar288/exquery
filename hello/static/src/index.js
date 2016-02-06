@@ -213,10 +213,10 @@ class Main extends React.Component {
 
   turnBookOff(book, e) {
     var onBooks = this.state.onBooks || new Set();
-    if (onBooks.has(book.isbn)) {
-      onBooks.delete(book.isbn);
+    if (onBooks.has(book.ISBN)) {
+      onBooks.delete(book.ISBN);
     } else {
-      onBooks.add(book.isbn);
+      onBooks.add(book.ISBN);
     }
     this.setState({onBooks: onBooks});
   }
