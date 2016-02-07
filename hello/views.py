@@ -392,9 +392,14 @@ def getResults(request, isbns):
 	#index += 1
     ISBNs = []
     results = []
-
-    for isbn in isbns:
-
+    new_isbns = []
+    words = isbns.split(",")
+    for word in words:
+      new_isbns.append(word)
+      
+      
+    for isbn in new_isbns:
+      
       nkeywords = []
 
     #step 1-1: from isbn to title+author  
@@ -422,13 +427,11 @@ def getResults(request, isbns):
 	  title = " "
       else:
 	title = " "
-      titles = title + "+"
-      w = title+"+"+author
-      
+
       
     #step 1-2: after having the title+author we search in solr for the item and then get all other item fields through solr and googleapis of the initial isbns  
-      work = []
-      work = re.sub("[^0-9a-zA-Z]+"," ",w)
+
+      work = re.sub("[^0-9a-zA-Z]+"," ",title)+"+"+re.sub("[^0-9a-zA-Z]+"," ",author)
       req = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+work+"&fq=MaterialType%3ABuch&start=0&rows=1&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
       soupreq1 = BeautifulSoup(req.text)
 
@@ -669,6 +672,7 @@ def getResults(request, isbns):
 	data['Keywords'] = ky;
 	data['Thumbnail'] = nthumbnaill;
 	results.append(data)
+    
 
 
     return JsonResponse({'results': results})
