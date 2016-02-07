@@ -39,14 +39,21 @@ class Main extends React.Component {
           this.setState(Object.assign(newState, { error: 'Couldn\'t find book' }));
         }
         var bookInfo = this.getBookInfo(data.items[0], code);
-        this.setState(Object.assign(newState, { bookInfo: bookInfo }));
+        this.setState({ pending: true });
+        this.setState(Object.assign(newState, {
+          pending: false,
+          bookInfo: bookInfo
+        }));
       }.bind(this));
     } else if (newState.step === steps.recommendations) {
       var url = '/getBookRecommendationsWithISBN/' + this.state.code;
+      this.setState({ pending: true });
       $.getJSON(url, function (data) {
         var recommendations = data.results;
-        debugger;
-        this.setState(Object.assign(newState, { recommendations: recommendations }));
+        this.setState(Object.assign(newState, {
+          pending: false,
+          recommendations: recommendations
+        }));
       }.bind(this));
     } else if (newState.step === steps.results) {
       var url = '/getResults/';
@@ -54,7 +61,7 @@ class Main extends React.Component {
         url += Array.from(this.state.onBooks).join(',') + ',';
       }
       url += this.state.code;
-      debugger;
+      this.setState({ pending: true });
       var metadata = this.state.metadata || new Map();
       var results = [];
       $.getJSON(url, function (data) {
@@ -77,7 +84,11 @@ class Main extends React.Component {
           newMetadata.set(key, { vals: val, on: true });
         });
         console.log(newMetadata);
-        this.setState(Object.assign(newState, { results: results, metadata: newMetadata }));
+        this.setState(Object.assign(newState, {
+          pending: false,
+          results: results,
+          metadata: newMetadata
+        }));
       }.bind(this));
     } else {
       this.setState(newState);
@@ -234,7 +245,9 @@ class Main extends React.Component {
         text: 'Enter books ISBN code'
       })
     );
-    if (this.state.error) {
+    if (this.state.pending) {
+      content = React.createElement(Loader, null);
+    } else if (this.state.error) {
       content = React.createElement(
         'div',
         null,

@@ -41,17 +41,24 @@ class Main extends React.Component {
           );
         }
         var bookInfo = this.getBookInfo(data.items[0], code);
+        this.setState({pending: true});
         this.setState(
-          Object.assign(newState, {bookInfo: bookInfo})
+          Object.assign(newState, {
+            pending: false,
+            bookInfo: bookInfo,
+          })
         );
       }.bind(this));
     } else if (newState.step === steps.recommendations) {
       var url = '/getBookRecommendationsWithISBN/' + this.state.code;
+      this.setState({pending: true});
       $.getJSON(url, function(data) {
         var recommendations = data.results;
-        debugger;
         this.setState(
-          Object.assign(newState, {recommendations: recommendations})
+          Object.assign(newState, {
+            pending: false,
+            recommendations: recommendations,
+          })
         );
       }.bind(this));
     } else if (newState.step === steps.results) {
@@ -60,7 +67,7 @@ class Main extends React.Component {
         url += Array.from(this.state.onBooks).join(',') + ',';
       }
       url += this.state.code;
-      debugger;
+      this.setState({pending: true});
       var metadata = this.state.metadata || new Map();
       var results = [];
       $.getJSON(url, function(data) {
@@ -84,7 +91,11 @@ class Main extends React.Component {
         });
         console.log(newMetadata);
         this.setState(
-          Object.assign(newState, {results: results, metadata: newMetadata})
+          Object.assign(newState, {
+            pending: false,
+            results: results,
+            metadata: newMetadata,
+          })
         );
       }.bind(this));
     } else {
@@ -249,7 +260,9 @@ class Main extends React.Component {
         />
       </div>
     );
-    if (this.state.error) {
+    if (this.state.pending) {
+      content = <Loader />;
+    } else if (this.state.error) {
       content = <div>{this.state.error}</div>;
     } else if (this.state.step === steps.input) {
       if (this.state.barcode) {
