@@ -68,33 +68,16 @@ class Main extends React.Component {
       }
       url += this.state.code;
       this.setState({pending: true});
-      var metadata = this.state.metadata || new Map();
       var results = [];
       $.getJSON(url, function(data) {
         results = data.results;
-        results.forEach(result => {
-          var keys = Object.keys(result);
-          keys.forEach(key => {
-            var vals = metadata.get(key) || new Set();
-            var els = result[key];
-            if (Array.isArray(els)) {
-              els.forEach(el => vals.add(el));
-            } else {
-              vals.add(result[key]);
-            }
-            metadata.set(key, vals);
-          });
+        results.forEach((result, i) => {
+          result = Object.assign(result, {display: 0});
         });
-        var newMetadata = new Map();
-        metadata.forEach((val, key) => {
-          newMetadata.set(key, {vals: val, on: true});
-        });
-        console.log(newMetadata);
         this.setState(
           Object.assign(newState, {
             pending: false,
             results: results,
-            metadata: newMetadata,
           })
         );
       }.bind(this));
@@ -244,6 +227,14 @@ class Main extends React.Component {
     this.setState({sorting: option, results: results});
   }
 
+  onDisableFilterItem(books, direction, field, el) {
+    var results = this.state.results;
+    books.forEach(idx => {
+      results[idx].display += direction;
+    });
+    this.setState({results: results});
+  }
+
   render() {
     var content = (
       <div className='center'>
@@ -269,7 +260,6 @@ class Main extends React.Component {
         content = (
           <div>
             <div id='interactive' className='viewport'></div>
-
             <a
               onClick={this.nextStep.bind(this, {barcode: false, code: 2000})}
               className='waves-effect waves-light btn-large'
@@ -360,7 +350,7 @@ class Main extends React.Component {
       var recommendedElements = [];
       this.state.results.forEach((book, j) => {
         recommendedElements.push(
-          <div className='col s4' key={'rec-' + j} >
+          <div className='col s4' key={'rec-' + j} id={'result-' + j}>
             <BookPicture
               book={book}
               onClick={this.toggleModal.bind(this, book)}
@@ -399,7 +389,10 @@ class Main extends React.Component {
     }
     return (
       <div>
-        <Header filters={this.state.metadata} />
+        <Header
+          filters={this.state.results}
+          onDisableFilterItem={this.onDisableFilterItem.bind(this)}
+        />
         {content}
         {this.state.overlay ?
           <BookModal

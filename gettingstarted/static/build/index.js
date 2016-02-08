@@ -62,32 +62,15 @@ class Main extends React.Component {
       }
       url += this.state.code;
       this.setState({ pending: true });
-      var metadata = this.state.metadata || new Map();
       var results = [];
       $.getJSON(url, function (data) {
         results = data.results;
-        results.forEach(result => {
-          var keys = Object.keys(result);
-          keys.forEach(key => {
-            var vals = metadata.get(key) || new Set();
-            var els = result[key];
-            if (Array.isArray(els)) {
-              els.forEach(el => vals.add(el));
-            } else {
-              vals.add(result[key]);
-            }
-            metadata.set(key, vals);
-          });
+        results.forEach((result, i) => {
+          result = Object.assign(result, { display: 0 });
         });
-        var newMetadata = new Map();
-        metadata.forEach((val, key) => {
-          newMetadata.set(key, { vals: val, on: true });
-        });
-        console.log(newMetadata);
         this.setState(Object.assign(newState, {
           pending: false,
-          results: results,
-          metadata: newMetadata
+          results: results
         }));
       }.bind(this));
     } else {
@@ -223,6 +206,14 @@ class Main extends React.Component {
     var results = this.state.results;
     this.sortResults(results, option);
     this.setState({ sorting: option, results: results });
+  }
+
+  onDisableFilterItem(books, direction, field, el) {
+    var results = this.state.results;
+    books.forEach(idx => {
+      results[idx].display += direction;
+    });
+    this.setState({ results: results });
   }
 
   render() {
@@ -376,7 +367,7 @@ class Main extends React.Component {
       this.state.results.forEach((book, j) => {
         recommendedElements.push(React.createElement(
           'div',
-          { className: 'col s4', key: 'rec-' + j },
+          { className: 'col s4', key: 'rec-' + j, id: 'result-' + j },
           React.createElement(BookPicture, {
             book: book,
             onClick: this.toggleModal.bind(this, book)
@@ -431,7 +422,10 @@ class Main extends React.Component {
     return React.createElement(
       'div',
       null,
-      React.createElement(Header, { filters: this.state.metadata }),
+      React.createElement(Header, {
+        filters: this.state.results,
+        onDisableFilterItem: this.onDisableFilterItem.bind(this)
+      }),
       content,
       this.state.overlay ? React.createElement(BookModal, {
         onClick: this.toggleModal.bind(this, null),

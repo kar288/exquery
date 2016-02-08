@@ -5,6 +5,7 @@ from .models import Greeting
 import json
 import sys
 from django.http import JsonResponse
+import time
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -331,7 +332,7 @@ def getBookRecommendationsWithISBN(request, isbn):
 
   return JsonResponse({'results': results})
 
-def getResults2(request):
+def getResults2(request, isbns):
     els = [{
         'Title': 'title5',
         'ISBN': '21421',
@@ -396,13 +397,13 @@ def getResults(request, isbns):
     words = isbns.split(",")
     for word in words:
       new_isbns.append(word)
-      
-      
+
+
     for isbn in new_isbns:
-      
+
       nkeywords = []
 
-    #step 1-1: from isbn to title+author  
+    #step 1-1: from isbn to title+author
       r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn)
       content = r.text
       t = json.loads(content)
@@ -428,8 +429,8 @@ def getResults(request, isbns):
       else:
 	title = " "
 
-      
-    #step 1-2: after having the title+author we search in solr for the item and then get all other item fields through solr and googleapis of the initial isbns  
+
+    #step 1-2: after having the title+author we search in solr for the item and then get all other item fields through solr and googleapis of the initial isbns
 
       work = re.sub("[^0-9a-zA-Z]+"," ",title)+"+"+re.sub("[^0-9a-zA-Z]+"," ",author)
       req = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+work+"&fq=MaterialType%3ABuch&start=0&rows=1&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
@@ -451,7 +452,7 @@ def getResults(request, isbns):
 	    nkeywords.append(i.text)
 	  checkreq13 = soupreq1.find("arr",{"name":"MaterialType"}).find("str")
 	  mediatype = checkreq13.text
-	  
+
 	  req2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+nisbn)
 	  content2 = req2.text
 	  t2 = json.loads(content2)
@@ -464,7 +465,7 @@ def getResults(request, isbns):
 	    else:
 		nauthor = " "
 	  else:
-	    nauthor = " "  
+	    nauthor = " "
 	  if "items" in t2:
 	    if "volumeInfo" in t2["items"][0]:
 	      if "title" in t2["items"][0]["volumeInfo"]:
@@ -482,9 +483,9 @@ def getResults(request, isbns):
 	    keywordsn += n + "+"
 	  keywordsn = keywordsn[:-1]
 	  ntitle = re.sub("[^0-9a-zA-Z]+"," ",ntitle)
-    
-      
-    #step2: search by every field in solr 
+
+
+    #step2: search by every field in solr
 	  #search solr by titles
 	  checks1 = []
 	  checks2 = []
@@ -511,7 +512,7 @@ def getResults(request, isbns):
 	      #else:
 		#checks3.append(c111.text)
 	      checks3.append(c111.text)
-	  
+
 	  #search solr by keywords
 	  query2 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?rows=10&q="+keywordsn)
 	  soup2 = BeautifulSoup(query2.text)
@@ -543,7 +544,7 @@ def getResults(request, isbns):
 	      checks2.append(nkeywords4)
 	      c333 = soup3.find("arr",{"name":"MaterialType"}).find("str")
 	      checks3.append(c333.text)
-	      
+
 	  #search solr Buch and filter by year
 	  query4 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q=buch&fq="+year+"&start=0&rows=10&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
 	  soup4 = BeautifulSoup(query4.text)
@@ -559,7 +560,7 @@ def getResults(request, isbns):
 	      checks2.append(nkeywords5)
 	      c444 = soup4.find("arr",{"name":"MaterialType"}).find("str")
 	      checks3.append(c444.text)
-	      
+
 	  #search solr by titles and filter by media type
 	  query5 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+ntitle+"&fq=MaterialType:"+mediatype+"&start=0&rows=10&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
 	  soup5 = BeautifulSoup(query5.text)
@@ -576,7 +577,7 @@ def getResults(request, isbns):
 	      c555 = soup5.find("arr",{"name":"MaterialType"}).find("str")
 	      checks3.append(c555.text)
 
-    nISBNs = [] 
+    nISBNs = []
     for i in ISBNs:
       i = i.split(' ')[0]
       nISBNs.append(i)
@@ -585,11 +586,13 @@ def getResults(request, isbns):
     result_isbn = []
     result_isbn = list(set(nISBNs))
 
-    #step3: get metadata for new isbn list 
+    #step3: get metadata for new isbn list
     for i in result_isbn:
-      
+      time.sleep(1);
+      print(i)
       r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+i)
       content = r.text
+      print(content)
       t3 = json.loads(content)
       if "items" in t3:
 	if "volumeInfo" in t3["items"][0]:
@@ -607,8 +610,8 @@ def getResults(request, isbns):
 	    titlee = " "
 	else:
 	  titlee = " "
-	
-	
+
+
 	q = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+titlee+authorr)
 	soupn = BeautifulSoup(q.text)
 	ch = soupn.find_all("arr",{"name":"ISBN"})
@@ -619,9 +622,9 @@ def getResults(request, isbns):
 	    ii = cn.find_all("str")
 	    for inn in ii:
 	      ky.append(inn.text)
-	    cnn = soupn.find("arr",{"name":"MaterialType"}).find("str") 
+	    cnn = soupn.find("arr",{"name":"MaterialType"}).find("str")
 
-    
+
 	if "volumeInfo" in t3["items"][0]:
 	  if "categories" in t3["items"][0]["volumeInfo"]:
 	    ncategoriess = t3["items"][0]["volumeInfo"]["categories"][0]
@@ -659,7 +662,7 @@ def getResults(request, isbns):
 	    ndate = " "
 	else:
 	  ndate = " "
-	
+
     #step4: make json file with data
 	data = {}
 	data['Title'] = titlee;
@@ -672,7 +675,7 @@ def getResults(request, isbns):
 	data['Keywords'] = ky;
 	data['Thumbnail'] = nthumbnaill;
 	results.append(data)
-    
+
 
 
     return JsonResponse({'results': results})

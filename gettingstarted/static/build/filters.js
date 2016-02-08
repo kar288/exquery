@@ -15,9 +15,32 @@ const BAD_FIELDS = {
 class Filters extends React.Component {
   constructor(props) {
     super(props);
+    var metadata = new Map();
+    var results = this.props.filters;
+    results.forEach((result, i) => {
+      var keys = Object.keys(result);
+      keys.forEach(key => {
+        var vals = metadata.get(key) || new Map();
+        var els = result[key];
+        if (!Array.isArray(els)) {
+          els = [els];
+        }
+        els.forEach(el => {
+          var obj = vals[el] || { on: true, books: [] };
+          obj.books.push(i);
+          vals.set(el, obj);
+        });
+        metadata.set(key, vals);
+      });
+    });
+    var newMetadata = new Map();
+    metadata.forEach((val, key) => {
+      var k = key.split('-')[0];
+      newMetadata.set(k, { vals: val, on: true });
+    });
     this.state = {
       openFilter: null,
-      filters: this.props.filters || new Map(),
+      filters: newMetadata,
       addFilter: false
     };
   }
@@ -31,6 +54,17 @@ class Filters extends React.Component {
 
   toggleAddFilter() {
     this.setState({ addFilter: !this.state.addFilter });
+  }
+
+  onDisableFilterItem(field, el, e) {
+    e.preventDefault();
+    var books = el.books;
+    var name = el.name;
+    this.props.onDisableFilterItem(books, e.target.checked ? 1 : -1);
+    var filters = this.state.filters;
+    var on = filters.get(field).vals.get(el.name).on;
+    filters.get(field).vals.get(el.name).on = !on;
+    return false;
   }
 
   toggleFilter(field) {
@@ -78,22 +112,52 @@ class Filters extends React.Component {
         }
       } else if (this.state.openFilter === field) {
         var filterVals = [];
-        values.vals.forEach((val, i) => {
-          filterVals.push(React.createElement(
+        var els = [];
+        values.vals.forEach((val, key, i) => {
+          els.push(Object.assign(val, { name: key }));
+        });
+        els.sort(function (a, b) {
+          if (field === 'Year') {
+            return parseInt(a.name) > parseInt(b.name);
+          } else {
+            return a.books.length > b.books.length;
+          }
+        });
+        els.forEach((el, i) => {
+          var input = React.createElement(
             'div',
             { key: 'val-' + i },
             React.createElement('input', {
               type: 'checkbox',
               className: 'filled-in',
               id: 'box-' + i,
-              defaultChecked: true
+              onClick: this.onDisableFilterItem.bind(this, field, el)
             }),
             React.createElement(
               'label',
               { htmlFor: 'box-' + i },
-              val
+              el.name
             )
-          ));
+          );
+          if (el.on) {
+            input = React.createElement(
+              'div',
+              { key: 'val-' + i },
+              React.createElement('input', {
+                type: 'checkbox',
+                className: 'filled-in',
+                id: 'box-' + i,
+                onClick: this.onDisableFilterItem.bind(this, field, el),
+                defaultChecked: true
+              }),
+              React.createElement(
+                'label',
+                { htmlFor: 'box-' + i },
+                el.name
+              )
+            );
+          }
+          filterVals.push(input);
         });
         filterDetails = React.createElement(
           'div',
