@@ -56,7 +56,7 @@ class Main extends React.Component {
         }));
       }.bind(this));
     } else if (newState.step === steps.results) {
-      var url = '/getResults/';
+      var url = '/getResults2/';
       if (this.state.onBooks && this.state.onBooks.size) {
         url += Array.from(this.state.onBooks).join(',') + ',';
       }
@@ -211,7 +211,7 @@ class Main extends React.Component {
   onDisableFilterItem(books, direction, field, el) {
     var results = this.state.results;
     books.forEach(idx => {
-      results[idx].display += direction;
+      results[idx].display += direction ? 1 : -1;
     });
     this.setState({ results: results });
   }

@@ -57,14 +57,13 @@ class Filters extends React.Component {
   }
 
   onDisableFilterItem(field, el, e) {
-    e.preventDefault();
     var books = el.books;
     var name = el.name;
-    this.props.onDisableFilterItem(books, e.target.checked ? 1 : -1);
     var filters = this.state.filters;
     var on = filters.get(field).vals.get(el.name).on;
     filters.get(field).vals.get(el.name).on = !on;
-    return false;
+    this.props.onDisableFilterItem(books, !on);
+    this.setState({filters: filters});
   }
 
   toggleFilter(field) {
@@ -127,24 +126,12 @@ class Filters extends React.Component {
                 className='filled-in'
                 id={'box-' + i}
                 onClick={this.onDisableFilterItem.bind(this, field, el)}
+                onChange={function() {}}
+                checked={el.on}
               />
               <label htmlFor={'box-' + i}>{el.name}</label>
             </div>
           );
-          if (el.on) {
-            input = (
-              <div key={'val-' + i}>
-                <input
-                  type='checkbox'
-                  className='filled-in'
-                  id={'box-' + i}
-                  onClick={this.onDisableFilterItem.bind(this, field, el)}
-                  defaultChecked
-                />
-                <label htmlFor={'box-' + i}>{el.name}</label>
-              </div>
-            );
-          }
           filterVals.push(input);
         });
         filterDetails = (
