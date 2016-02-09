@@ -91,6 +91,10 @@ def getBookRecommendationsWithTitle(request, title):
       nkeywords.append(i.text)
     #print(nkeywords)
 
+    repp = requests.get("http://www.librarything.com/title/"+work)
+    soupss1 = BeautifulSoup(repp.text)
+    check_repp = soupss1.find("link", {"rel": "canonical"})
+
   #step5: get other data from googleapis (author, title, categories, description, thumbnail)
     req2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+nisbn)
     content2 = req2.text
@@ -129,16 +133,23 @@ def getBookRecommendationsWithTitle(request, title):
     else:
       ncategories = " "
 
-    if "items" in t2:
-      if "volumeInfo" in t2["items"][0]:
-	if "description" in t2["items"][0]["volumeInfo"]:
-	  ndescription = t2["items"][0]["volumeInfo"]["description"]
-	else:
-	  ndescription = " "
+    if "volumeInfo" in t2["items"][0]:
+      if "description" in t2["items"][0]["volumeInfo"]:
+	ndescription = t2["items"][0]["volumeInfo"]["description"]
+	# if librarything contains the page then get description from librarything
+      elif check_rep != None:
+	linkk = check_repp['href']
+
+	repp2 = requests.get(linkk+"/descriptions")
+	soupss2 = BeautifulSoup(repp2.text)
+	check_repp2 = soupss2.find("div",{"class":"qelcontent"}).find_all("p")
+	ndescription = check_repp2[1].text
+	#then get description from solr
+      elif soupn.find("arr",{"name":"Abstract"}) != None:
+	mm = soupreq1.find("arr",{"name":"Abstract"}).find("str")
+	ndescription = mm.text
       else:
 	ndescription = " "
-    else:
-      ndescription = " "
 
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
@@ -252,6 +263,10 @@ def getBookRecommendationsWithISBN(request, isbn):
     for i in it:
       nkeywords.append(i.text)
     #print(nkeywords)
+    
+    repp = requests.get("http://www.librarything.com/title/"+work)
+    soupss1 = BeautifulSoup(repp.text)
+    check_repp = soupss1.find("link", {"rel": "canonical"})
 
   #step6: get other data from googleapis (author, title, categories, description, thumbnail)
     req2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+nisbn)
@@ -291,16 +306,24 @@ def getBookRecommendationsWithISBN(request, isbn):
     else:
       ncategories = " "
 
-    if "items" in t2:
-      if "volumeInfo" in t2["items"][0]:
-	if "description" in t2["items"][0]["volumeInfo"]:
-	  ndescription = t2["items"][0]["volumeInfo"]["description"]
-	else:
-	  ndescription = " "
+    if "volumeInfo" in t2["items"][0]:
+      if "description" in t2["items"][0]["volumeInfo"]:
+	ndescription = t2["items"][0]["volumeInfo"]["description"]
+	# if librarything contains the page then get description from librarything
+      elif check_rep != None:
+	linkk = check_repp['href']
+
+	repp2 = requests.get(linkk+"/descriptions")
+	soupss2 = BeautifulSoup(repp2.text)
+	check_repp2 = soupss2.find("div",{"class":"qelcontent"}).find_all("p")
+	ndescription = check_repp2[1].text
+	#then get description from solr
+      elif soupn.find("arr",{"name":"Abstract"}) != None:
+	mm = soupreq1.find("arr",{"name":"Abstract"}).find("str")
+	ndescription = mm.text
       else:
 	ndescription = " "
-    else:
-      ndescription = " "
+
 
     if "items" in t2:
       if "volumeInfo" in t2["items"][0]:
