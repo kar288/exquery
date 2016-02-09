@@ -627,8 +627,8 @@ def getResults(request, isbns):
 	      ky.append(inn.text)
 	    cnn = soupn.find("arr",{"name":"MaterialType"}).find_all("str")
 	    cnn2 = cnn[1].text
-	    date = soupn.find("arr",{"name":"DateOfPublication"}).find("str")
-	    ncateg = soupn.find("arr",{"name":"BibLevel"}).find("str")
+	    date = soupn.find("arr",{"name":"DateOfPublication"}).find("str").text
+	    ncateg = soupn.find("arr",{"name":"BibLevel"}).find_all("str")
 	    ncategoriess = ncateg[1].text
 
 
