@@ -120,10 +120,10 @@ def getBookRecommendationsWithTitle(request, title):
 
 
     if ntitle == " ":
-      checks1 = soupreq1.find("arr",{"name":"Author"}).find("str").text
+      ntitle = soupreq1.find("arr",{"name":"Author"}).find("str").text
       
     if nauthor == " ":
-      checks1 = soupreq1.find("arr",{"name":"Title"}).find("str").text
+      nauthor = soupreq1.find("arr",{"name":"Title"}).find("str").text
     #if "items" in t2:
       #if "volumeInfo" in t2["items"][0]:
 	#if "categories" in t2["items"][0]["volumeInfo"]:
@@ -292,10 +292,10 @@ def getBookRecommendationsWithISBN(request, isbn):
       ntitle = " "
 
     if ntitle == " ":
-      checks1 = soupreq1.find("arr",{"name":"Author"}).find("str").text
+      ntitle = soupreq1.find("arr",{"name":"Author"}).find("str").text
       
     if nauthor == " ":
-      checks1 = soupreq1.find("arr",{"name":"Title"}).find("str").text
+      ntitle = soupreq1.find("arr",{"name":"Title"}).find("str").text
 
     #if "items" in t2:
       #if "volumeInfo" in t2["items"][0]:
