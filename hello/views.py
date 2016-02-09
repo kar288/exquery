@@ -589,10 +589,8 @@ def getResults(request, isbns):
     #step3: get metadata for new isbn list
     for i in result_isbn:
       time.sleep(1);
-      print(i)
       r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+i)
       content = r.text
-      print(content)
       t3 = json.loads(content)
       if "items" in t3:
 	if "volumeInfo" in t3["items"][0]:
@@ -611,7 +609,11 @@ def getResults(request, isbns):
 	else:
 	  titlee = " "
 
-
+	rep = requests.get("http://www.librarything.com/title/"+titlee+authorr)
+	soups1 = BeautifulSoup(rep.text)
+	
+	check_rep = soups1.find("link", {"rel": "canonical"})
+	
 	q = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+titlee+authorr)
 	soupn = BeautifulSoup(q.text)
 	ch = soupn.find_all("arr",{"name":"ISBN"})
@@ -622,25 +624,48 @@ def getResults(request, isbns):
 	    ii = cn.find_all("str")
 	    for inn in ii:
 	      ky.append(inn.text)
-	    cnn = soupn.find("arr",{"name":"MaterialType"}).find("str")
+	    cnn = soupn.find("arr",{"name":"MaterialType"}).find_all("str")
+	    cnn2 = cnn[1].text
+	    date = soupn.find("arr",{"name":"DateOfPublication"}).find("str")
+	    ncateg = soupn.find("arr",{"name":"BibLevel"}).find("str")
+	    ncategoriess = ncateg[1].text
 
 
-	if "volumeInfo" in t3["items"][0]:
-	  if "categories" in t3["items"][0]["volumeInfo"]:
-	    ncategoriess = t3["items"][0]["volumeInfo"]["categories"][0]
-	  else:
-	    ncategoriess = " "
-	else:
-	  ncategoriess = " "
+	#if "volumeInfo" in t3["items"][0]:
+	  #if "categories" in t3["items"][0]["volumeInfo"]:
+	    #ncategoriess = t3["items"][0]["volumeInfo"]["categories"][0]
+	  #else:
+	    #ncategoriess = " "
+	#else:
+	  #ncategoriess = " "
 
 
+	#if "volumeInfo" in t3["items"][0]:
+	  #if "description" in t3["items"][0]["volumeInfo"]:
+	    #ndescriptionn = t3["items"][0]["volumeInfo"]["description"]
+	  #else:
+	    #ndescriptionn = " "
+	#else:
+	  #ndescriptionn = " "
+	  
+	#check if description in googleapis
 	if "volumeInfo" in t3["items"][0]:
 	  if "description" in t3["items"][0]["volumeInfo"]:
 	    ndescriptionn = t3["items"][0]["volumeInfo"]["description"]
+	    # if librarything contains the page then get description from librarything
+	  elif check_rep != None:
+	    link = check_rep['href']
+
+	    rep2 = requests.get(link+"/descriptions")
+	    soups2 = BeautifulSoup(rep2.text)
+	    check_rep2 = soups2.find("div",{"class":"qelcontent"}).find_all("p")
+	    ndescriptionn = check_rep2[1].text
+	  #then get description from solr
+	  elif soupn.find("arr",{"name":"Abstract"}) != None:
+	    mm = soupn.find("arr",{"name":"Abstract"}).find("str")
+	    ndescriptionn = mm.text
 	  else:
 	    ndescriptionn = " "
-	else:
-	  ndescriptionn = " "
 
 
 	if "volumeInfo" in t3["items"][0]:
@@ -655,22 +680,14 @@ def getResults(request, isbns):
 	  nthumbnaill = " "
 
 
-	if "volumeInfo" in t3["items"][0]:
-	  if "title" in t3["items"][0]["volumeInfo"]:
-	    ndate = t3["items"][0]["volumeInfo"]["publishedDate"]
-	  else:
-	    ndate = " "
-	else:
-	  ndate = " "
-
     #step4: make json file with data
 	data = {}
 	data['Title'] = titlee;
 	data['ISBN'] = i;
 	data['Author'] = authorr;
 	data['Category'] = ncategoriess;
-	data['Year'] = ndate;
-	data['Media Type'] = cnn.text;
+	data['Year'] = date;
+	data['Media Type'] = cnn2;
 	data['Description'] = ndescriptionn;
 	data['Keywords'] = ky;
 	data['Thumbnail'] = nthumbnaill;
