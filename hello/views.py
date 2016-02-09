@@ -121,7 +121,7 @@ def getBookRecommendationsWithTitle(request, title):
 
     if ntitle == " ":
       ntitle = soupreq1.find("arr",{"name":"Author"}).find("str").text
-      
+
     if nauthor == " ":
       nauthor = soupreq1.find("arr",{"name":"Title"}).find("str").text
     #if "items" in t2:
@@ -145,7 +145,7 @@ def getBookRecommendationsWithTitle(request, title):
 	ndescription = " "
     else:
       ndescription = " "
-      
+
     if ndescription == " ":
       if soupreq1.find("arr",{"name":"Abstract"}) != None:
 	nn = soupreq1.find("arr",{"name":"Abstract"}).find("str")
@@ -182,6 +182,39 @@ def getBookRecommendationsWithTitle(request, title):
 
   return JsonResponse({'results': results})
 
+def getBookRecommendationsWithISBN2(request, isbn):
+    results = []
+    r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn)
+    data = json.loads(r.text)
+    # print(data)
+    if data['totalItems'] < 1:
+        return JsonResponse({'results': results})
+    author = ''
+    title = ''
+    try:
+        volumeInfo = data['items'][0]['volumeInfo']
+        author = volumeInfo['authors'][0]
+        title = volumeInfo['title']
+    except KeyError: pass
+    print(title)
+    print(author)
+
+    rlt = requests.get("http://www.librarything.com/title/"+ title + '+' + author)
+    soup = BeautifulSoup(rlt.text)
+    check = soup.find("ol", {"class": "memberrecommendations"})
+    if check is not None:
+      recommendations = check.find_all("a", href = re.compile("^(/work/)|^(/author/)"))
+      for recommendation in recommendations:
+          print recommendation.text
+          print recommendation['href']
+    #   print(recommendations)
+    #   for x in recommendations[:6:2]:
+    #     works.append((x.text, ""))
+    #     index = 0
+    #   for x in recommendations[1:6:2]:
+    #     works[index] = (works[index][0], x.text)
+    #     index += 1
+    return JsonResponse({'results': results})
 
 def getBookRecommendationsWithISBN(request, isbn):
 
@@ -293,7 +326,7 @@ def getBookRecommendationsWithISBN(request, isbn):
 
     if ntitle == " ":
       ntitle = soupreq1.find("arr",{"name":"Author"}).find("str").text
-      
+
     if nauthor == " ":
       ntitle = soupreq1.find("arr",{"name":"Title"}).find("str").text
 
@@ -318,7 +351,7 @@ def getBookRecommendationsWithISBN(request, isbn):
 	ndescription = " "
     else:
       ndescription = " "
-      
+
     if ndescription == " ":
       if soupreq1.find("arr",{"name":"Abstract"}) != None:
 	nn = soupreq1.find("arr",{"name":"Abstract"}).find("str")
@@ -398,6 +431,9 @@ def getResults2(request, isbns):
         'Thumbnail': 'http://books.google.de/books/content?id=6uLtnQEACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api',
     }]
     return JsonResponse({'results': els})
+
+def getResults3(request, isbns):
+    return JsonResponse({'results': []})
 
 def getResults(request, isbns):
    #import pdb
@@ -634,9 +670,9 @@ def getResults(request, isbns):
 
 	#rep = requests.get("http://www.librarything.com/title/"+titlee+authorr)
 	#soups1 = BeautifulSoup(rep.text)
-	
+
 	#check_rep = soups1.find("link", {"rel": "canonical"})
-	
+
 	q = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+titlee+authorr)
 	soupn = BeautifulSoup(q.text)
 	ch = soupn.find_all("arr",{"name":"ISBN"})
