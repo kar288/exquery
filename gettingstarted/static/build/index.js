@@ -46,7 +46,7 @@ class Main extends React.Component {
         }));
       }.bind(this));
     } else if (newState.step === steps.recommendations) {
-      var url = '/getBookRecommendationsWithISBN2/' + this.state.code;
+      var url = '/getBookRecommendationsWithISBN/' + this.state.code;
       this.setState({ pending: true });
       $.getJSON(url, function (data) {
         var recommendations = data.results;

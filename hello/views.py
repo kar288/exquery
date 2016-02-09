@@ -184,52 +184,6 @@ def getBookRecommendationsWithTitle(request, title):
 
 def getBookRecommendationsWithISBN2(request, isbn):
     results = []
-    r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn)
-    data = json.loads(r.text)
-    print(data)
-    if not 'totalItems' in data:
-        return JsonResponse({'results': results})
-    if data['totalItems'] < 1:
-        return JsonResponse({'results': results})
-    author = ''
-    title = ''
-    try:
-        volumeInfo = data['items'][0]['volumeInfo']
-        author = volumeInfo['authors'][0]
-        title = volumeInfo['title']
-    except KeyError: pass
-    print(title)
-    print(author)
-
-    rlt = requests.get("http://www.librarything.com/title/"+ title + '+' + author)
-    soup = BeautifulSoup(rlt.text, "html.parser")
-    check = soup.find("ol", {"class": "memberrecommendations"})
-    print('************************************')
-    print(check)
-
-    if check is not None:
-      recommendations = check.find_all("a", href = re.compile("^(/work/)"))
-      print('--------------------------------------')
-      print(recommendations)
-      i = 0
-      while len(results) < 3 and i < len(recommendations):
-          recommendation = recommendations[i]
-          print recommendation.text
-          r2 = requests.get("https://www.googleapis.com/books/v1/volumes?q=inTitle:" + recommendation.text)
-          data2 = json.loads(r.text)
-          volumeInfo = data2['items'][0]['volumeInfo']
-          print(volumeInfo)
-          author = volumeInfo['authors'][0]
-          title = volumeInfo['title']
-          thumbnail = volumeInfo['imageLinks']['thumbnail']
-          description = volumeInfo.get('description', '')
-          result = {}
-          result['Author'] = author
-          result['Title'] = title
-          result['Thumbnail'] = thumbnail
-          result['Description'] = description
-          results.append(result)
-          i += 1
     return JsonResponse({'results': results})
 
 def getBookRecommendationsWithISBN(request, isbn):
