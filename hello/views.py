@@ -510,9 +510,6 @@ def getResults(request, isbns):
 
     #step2: search by every field in solr
 	  #search solr by titles
-	  checks1 = []
-	  checks2 = []
-	  checks3 = []
 	  query1 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?rows=10&q="+ntitle)
 	  soup1 = BeautifulSoup(query1.text)
 	  check1 = soup1.find_all("arr",{"name":"ISBN"})
@@ -524,7 +521,6 @@ def getResults(request, isbns):
 	      it2 = c11.find_all("str")
 	      for i2 in it2:
 		nkeywords2.append(i2.text)
-	      checks2.append(nkeywords2)
 	      c111 = soup1.find("arr",{"name":"MaterialType"}).find("str")
 	      #if " " in c111.text:
 		#c111.text = c111.text.split(' ')[0]
@@ -534,7 +530,6 @@ def getResults(request, isbns):
 		#checks3.append(c111.text)
 	      #else:
 		#checks3.append(c111.text)
-	      checks3.append(c111.text)
 
 	  #search solr by keywords
 	  query2 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?rows=10&q="+keywordsn)
@@ -548,9 +543,7 @@ def getResults(request, isbns):
 	      it3 = c22.find_all("str")
 	      for i3 in it3:
 		nkeywords3.append(i3.text)
-	      checks2.append(nkeywords3)
 	      c222 = soup2.find("arr",{"name":"MaterialType"}).find("str")
-	      checks3.append(c222.text)
 
 	  #search solr by authors
 	  query3 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?rows=10&q="+nauthor)
@@ -564,41 +557,39 @@ def getResults(request, isbns):
 	      it4 = c33.find_all("str")
 	      for i4 in it4:
 		nkeywords4.append(i4.text)
-	      checks2.append(nkeywords4)
 	      c333 = soup3.find("arr",{"name":"MaterialType"}).find("str")
-	      checks3.append(c333.text)
 
 	  #search solr Buch and filter by year
-	  query4 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q=buch&fq="+year+"&start=0&rows=10&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
-	  soup4 = BeautifulSoup(query4.text)
-	  check4 = soup4.find_all("arr",{"name":"ISBN"})
-	  if check4 != None and (char.isdigit() for char in check4):
-	    for item4 in check4:
-	      ISBNs.append(item4.text)
-	      c44 =soup4.find("arr",{"name":"text_auto"})
-	      nkeywords5 = []
-	      it5 = c44.find_all("str")
-	      for i5 in it5:
-		nkeywords5.append(i5.text)
-	      checks2.append(nkeywords5)
-	      c444 = soup4.find("arr",{"name":"MaterialType"}).find("str")
-	      checks3.append(c444.text)
+	  #query4 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q=buch&fq="+year+"&start=0&rows=5&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
+	  #soup4 = BeautifulSoup(query4.text)
+	  #check4 = soup4.find_all("arr",{"name":"ISBN"})
+	  #if check4 != None and (char.isdigit() for char in check4):
+	    #for item4 in check4:
+	      #ISBNs.append(item4.text)
+	      #c44 =soup4.find("arr",{"name":"text_auto"})
+	      #nkeywords5 = []
+	      #it5 = c44.find_all("str")
+	      #for i5 in it5:
+		#nkeywords5.append(i5.text)
+	      #checks2.append(nkeywords5)
+	      #c444 = soup4.find("arr",{"name":"MaterialType"}).find("str")
+	      #checks3.append(c444.text)
 
 	  #search solr by titles and filter by media type
-	  query5 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+ntitle+"&fq=MaterialType:"+mediatype+"&start=0&rows=10&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
-	  soup5 = BeautifulSoup(query5.text)
-	  check5 = soup5.find_all("arr",{"name":"ISBN"})
-	  if check5 != None and (char.isdigit() for char in check5):
-	    for item5 in check5:
-	      ISBNs.append(item5.text)
-	      c55 =soup5.find("arr",{"name":"text_auto"})
-	      nkeywords6 = []
-	      it6 = c55.find_all("str")
-	      for i6 in it6:
-		nkeywords6.append(i6.text)
-	      checks2.append(nkeywords6)
-	      c555 = soup5.find("arr",{"name":"MaterialType"}).find("str")
-	      checks3.append(c555.text)
+	  #query5 = requests.get("http://katalog.stbib-koeln.de:8983/solr/select?indent=on&version=2.2&q="+ntitle+"&fq=MaterialType:"+mediatype+"&start=0&rows=5&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=")
+	  #soup5 = BeautifulSoup(query5.text)
+	  #check5 = soup5.find_all("arr",{"name":"ISBN"})
+	  #if check5 != None and (char.isdigit() for char in check5):
+	    #for item5 in check5:
+	      #ISBNs.append(item5.text)
+	      #c55 =soup5.find("arr",{"name":"text_auto"})
+	      #nkeywords6 = []
+	      #it6 = c55.find_all("str")
+	      #for i6 in it6:
+		#nkeywords6.append(i6.text)
+	      #checks2.append(nkeywords6)
+	      #c555 = soup5.find("arr",{"name":"MaterialType"}).find("str")
+	      #checks3.append(c555.text)
 
     nISBNs = []
     for i in ISBNs:
@@ -608,10 +599,11 @@ def getResults(request, isbns):
     ###merge list (remove duplicate entries/isbs)
     result_isbn = []
     result_isbn = list(set(nISBNs))
+    results_isbn = result_isbn[:10]
 
     #step3: get metadata for new isbn list
-    for i in result_isbn:
-      time.sleep(1);
+    for i in results_isbn:
+      #time.sleep(1);
       r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+i)
       content = r.text
       t3 = json.loads(content)
