@@ -34,6 +34,7 @@ class Main extends React.Component {
     if (newState.step === steps.confirmation) {
       var googleBookAPI = 'https://www.googleapis.com/books/v1/volumes?q=isbn:';
       var code = this.state.code ? this.state.code : newState.code;
+      this.setState(Object.assign(newState, {pending: true}));
       $.getJSON(this.googleApiUrl(code), function(data) {
         if (data.totalItems === 0) {
           this.setState(
@@ -41,7 +42,6 @@ class Main extends React.Component {
           );
         }
         var bookInfo = this.getBookInfo(data.items[0], code);
-        this.setState({pending: true});
         this.setState(
           Object.assign(newState, {
             pending: false,
