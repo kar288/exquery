@@ -17,9 +17,13 @@ class Filters extends React.Component {
     super(props);
     var metadata = new Map();
     var results = this.props.filters;
+    debugger;
     results.forEach((result, i) => {
       var keys = Object.keys(result);
       keys.forEach(key => {
+        if (key === 'display') {
+          return;
+        }
         var vals = metadata.get(key) || new Map();
         var els = result[key];
         if (!Array.isArray(els)) {
@@ -115,8 +119,10 @@ class Filters extends React.Component {
         values.vals.forEach((val, key, i) => {
           els.push(Object.assign(val, { name: key }));
         });
+        debugger;
         els.sort(function (a, b) {
           if (field === 'Year') {
+            debugger;
             return parseInt(a.name) > parseInt(b.name);
           } else {
             return a.books.length > b.books.length;
