@@ -611,7 +611,7 @@ def getResults(request, isbns):
 
     #step3: get metadata for new isbn list
     for i in result_isbn:
-      #time.sleep(1);
+      time.sleep(1);
       r = requests.get("https://www.googleapis.com/books/v1/volumes?q=isbn:"+i)
       content = r.text
       t3 = json.loads(content)
