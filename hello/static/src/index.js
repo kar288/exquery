@@ -235,6 +235,11 @@ class Main extends React.Component {
     this.setState({results: results});
   }
 
+  stepBack() {
+    var step = this.state.step - 1;
+    this.setState({step: step});
+  }
+
   render() {
     var content = (
       <div className='center'>
@@ -390,6 +395,8 @@ class Main extends React.Component {
     return (
       <div>
         <Header
+          step={this.state.step}
+          stepBack={this.stepBack.bind(this)}
           filters={this.state.results}
           onDisableFilterItem={this.onDisableFilterItem.bind(this)}
         />

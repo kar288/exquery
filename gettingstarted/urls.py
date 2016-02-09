@@ -18,7 +18,8 @@ urlpatterns = [
     url(r'^getBookRecommendationsWithTitle/(?P<title>[\w ]+)$', hello.views.getBookRecommendationsWithTitle, name='getBookRecommendationsWithTitle'),
     url(r'^getBookRecommendationsWithISBN/(?P<isbn>\d+)$', hello.views.getBookRecommendationsWithISBN, name='getBookRecommendationsWithISBN'),
     url(r'^getResults/(?P<isbns>[\d,]+)$', hello.views.getResults, name='getResults'),
-    url(r'^getResults2/(?P<isbns>[\d,]+)$', hello.views.getResults2, name='getResults2')
+    url(r'^getResults2/(?P<isbns>[\d,]+)$', hello.views.getResults2, name='getResults2'),
+    url(r'^getResults3/(?P<isbns>[\d,]+)$', hello.views.getResults3, name='getResults3')
 ]
 # (?P<title>\w+)/$
 # url(r'^getBookRecommendationsWithISBN/(?P<isbn>\d+)/$', hello.views.getBookRecommendationsWithISBN, name='getBookRecommendationsWithISBN')

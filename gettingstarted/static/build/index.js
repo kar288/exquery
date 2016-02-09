@@ -216,6 +216,11 @@ class Main extends React.Component {
     this.setState({ results: results });
   }
 
+  stepBack() {
+    var step = this.state.step - 1;
+    this.setState({ step: step });
+  }
+
   render() {
     var content = React.createElement(
       'div',
@@ -423,6 +428,8 @@ class Main extends React.Component {
       'div',
       null,
       React.createElement(Header, {
+        step: this.state.step,
+        stepBack: this.stepBack.bind(this),
         filters: this.state.results,
         onDisableFilterItem: this.onDisableFilterItem.bind(this)
       }),
