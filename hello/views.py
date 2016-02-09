@@ -120,10 +120,10 @@ def getBookRecommendationsWithTitle(request, title):
 
 
     if ntitle == " ":
-      ntitle = soupreq1.find("arr",{"name":"Author"}).find("str").text
+      ntitle = soupreq1.find("arr",{"name":"Title"}).find("str").text
       
     if nauthor == " ":
-      nauthor = soupreq1.find("arr",{"name":"Title"}).find("str").text
+      nauthor = soupreq1.find("arr",{"name":"Author"}).find("str").text
     #if "items" in t2:
       #if "volumeInfo" in t2["items"][0]:
 	#if "categories" in t2["items"][0]["volumeInfo"]:
@@ -170,11 +170,11 @@ def getBookRecommendationsWithTitle(request, title):
     data['Title'] = ntitle;
     data['ISBN'] = nisbn;
     data['Author'] = nauthor;
-    data['Category'] = ncategories;
-    data['Year'] = checkreq11.text;
+    data['Category'] = ' ';
+    data['Year'] = ' ';
     data['Media Type'] = 'book';
     data['Description'] = ndescription;
-    data['Keywords'] = nkeywords;
+    data['Keywords'] = ' ';
     data['Thumbnail'] = nthumbnail;
     # json_data = json.dumps(data)
     print(data)
@@ -292,10 +292,10 @@ def getBookRecommendationsWithISBN(request, isbn):
       ntitle = " "
 
     if ntitle == " ":
-      ntitle = soupreq1.find("arr",{"name":"Author"}).find("str").text
+      ntitle = soupreq1.find("arr",{"name":"Title"}).find("str").text
       
     if nauthor == " ":
-      ntitle = soupreq1.find("arr",{"name":"Title"}).find("str").text
+      nauthor = soupreq1.find("arr",{"name":"Author"}).find("str").text
 
     #if "items" in t2:
       #if "volumeInfo" in t2["items"][0]:
@@ -343,11 +343,11 @@ def getBookRecommendationsWithISBN(request, isbn):
     data['Title'] = ntitle;
     data['ISBN'] = nisbn;
     data['Author'] = nauthor;
-    data['Category'] = ncategories;
-    data['Year'] = checkreq11.text;
+    data['Category'] = ' ';
+    data['Year'] = ' ';
     data['Media Type'] = 'book';
     data['Description'] = ndescription;
-    data['Keywords'] = nkeywords;
+    data['Keywords'] = ' ';
     data['Thumbnail'] = nthumbnail;
     # json_data = json.dumps(data)
     results.append(data)
