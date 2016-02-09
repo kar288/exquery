@@ -56,7 +56,7 @@ class Main extends React.Component {
         }));
       }.bind(this));
     } else if (newState.step === steps.results) {
-      var url = '/getResults2/';
+      var url = '/getResults/';
       if (this.state.onBooks && this.state.onBooks.size) {
         url += Array.from(this.state.onBooks).join(',') + ',';
       }
